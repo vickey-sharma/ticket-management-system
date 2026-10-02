@@ -22,8 +22,6 @@ try {
     }
     
     
-    ///IMPORTANT
-    
     req.user = user 
     next()
     
