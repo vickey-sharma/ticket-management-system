@@ -9,12 +9,12 @@ const ticketSchema = new Schema(
             trim: true,
             lowercase: true
         },
-        issueTitle: {
+        title: {
             type: String,
             required: true,
             trim: true,
         },
-        issueDescription: {
+        description: {
             type: String,
             required: true
         },
@@ -27,9 +27,10 @@ const ticketSchema = new Schema(
 assignedTo : {
      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+       default: null
 },
 
-ticketStatus: {
+status: {
     type: String,
   enum: ["open", "in_progress", "resolved", "closed"],
     default:"open"
@@ -39,19 +40,6 @@ createdBy: {
         ref: "User",
         required: true
 },
-updatedBy: [
-    {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-        updatedAt: {
-            type: Date,
-            default: Date.now,
-        },
-    },
-],
 isDeleted: {
   type: Boolean,
   default: false
@@ -79,30 +67,3 @@ export const Ticket = mongoose.model("Ticket", ticketSchema)
 
 
 
-
-
-
-
-
-// replyMessage: [ 
-//   {
-//     category: {
-//         type: String,
-//        enum: ["work_in_progress", "issue_resolved"],
-//         required: true
-//     },
-//      message: {
-//     type: String,
-//     required: true,
-//     trim: true
-// },
-//     repliedBy: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//     },
-//     createdAt: {
-//     type: Date,
-//     default: Date.now
-// }
-//   }
-// ],
