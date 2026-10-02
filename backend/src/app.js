@@ -39,14 +39,14 @@ app.use(rateLimit({
 //ROUTES IMPORT -- renamed as export default is used
 
 import userRouter from "./routes/user.routes.js";
-import registeredProductRouter from "./routes/registeredProduct.routes.js";
 import ticketRouter from "./routes/ticket.route.js";
+import commentRouter from "./routes/comment.route.js";
 
 
 //ROUTES DECLERATION
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/registered-products", registeredProductRouter);
 app.use("/api/v1/tickets", ticketRouter);
+app.use("/api/v1/tickets", commentRouter);
 
 
 
