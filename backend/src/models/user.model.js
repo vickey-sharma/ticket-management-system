@@ -2,14 +2,6 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const isVendor = function () {
-    return this.role === "vendor";
-};
-
-const isClientOrVendor = function () {
-    return ["client", "vendor"].includes(this.role);
-};
-
 const userSchema = new Schema(
     {
 fullName: {
@@ -30,39 +22,12 @@ email: {
 },
 password: {
  type: String, 
-default: null
-},
-isVerified: {
-    type: Boolean,
-    default: false
-},
-isRegistrationComplete: {
-   type: Boolean,
-   default: false
-},
-phoneNumber: {
-    type: String,
-    required: [true, "Phone Number is required"],
-     trim: true,
-    match: [/^(\+91|91)?[6-9]\d{9}$/, "Invalid Indian phone number"]
+ required: [true, "Password is required"],
 },
 role: {
     type: String,
-    enum: ["superadmin", "admin", "engineer", "l1_engineer", "client", "sales_manager", "inventory_manager", "vendor"],
-    default: "client"
-},
- companyName: {
-    type: String,
-    required: isClientOrVendor,
-    trim: true
-  },
-  canLogin: {
-    type: Boolean,
-    default: true
-},
-isActive: {
-    type: Boolean,
-    default: false
+    enum: [ "admin", "agent", "customer"],
+    default: "customer"
 },
 isDeleted: {
   type: Boolean,
@@ -81,30 +46,6 @@ createdBy: {
     default: null
 },
 
-fullAddress: {
-    type: String,
-    required: isVendor,
-    trim: true,
-},
-
-city: {
-    type: String,
-    required: isVendor,
-    trim: true,
-},
-
-state: {
-    type: String,
-    required: isVendor,
-    trim: true,
-},
-
-pincode: {
-    type: String,
-    required: isVendor,
-    trim: true,
-},
-
 },
 { timestamps: true }
 )
@@ -121,16 +62,6 @@ this.password = await bcrypt.hash(this.password, 10)
 userSchema.methods.isPasswordCorrect = async function (password){
   return await bcrypt.compare(password, this.password) 
 };
-
-//FOR NULL SAFETY CHECK
-// userSchema.methods.isPasswordCorrect = async function (password) {
-//     if (!this.password) {
-//         return false;
-//     }
-
-//     return await bcrypt.compare(password, this.password);
-// };
-
 
 
 userSchema.methods.generateAccessToken = function (){
