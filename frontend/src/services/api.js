@@ -1,15 +1,4 @@
 
-// const api = axios.create({
-//   baseURL: "http://localhost:5000/api/v1",
-//   withCredentials: true,
-// });
-
-
-
-// export default api;
-
-
-
 import axios from "axios";
 
 const api = axios.create({
@@ -28,17 +17,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Only retry once
-//    if (
-//     error.response?.status === 401 &&
-//     !originalRequest._retry &&
-//     !originalRequest.url.includes("/refresh-token")
-// )
 if (
   error.response?.status === 401 &&
   !originalRequest._retry &&
   !originalRequest.url.includes("/refresh-token") &&
-  !originalRequest.url.includes("/current-user")
+  !originalRequest.url.includes("/me")
 ) {
       originalRequest._retry = true;
 
@@ -61,10 +44,8 @@ if (
 
         localStorage.removeItem("user");
 
-        // window.location.href = "/auth/login-activate";
-
-        if (window.location.pathname !== "/auth/login-activate") {
-  window.location.replace("/auth/login-activate");
+ if (window.location.pathname !== "/auth/login") {
+  window.location.replace("/auth/login");
 }
 
         return Promise.reject(refreshError);

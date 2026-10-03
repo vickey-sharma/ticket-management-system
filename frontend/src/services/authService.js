@@ -1,35 +1,95 @@
-import axios from "axios";
-import api from "./api";
+import api from "./api.js";
 
 
-export const loginUser = (data) => {
-    return api.post("/users/login", data);
+// ==============================
+// Customer Registration
+// ==============================
+
+export const registerCustomer = (userData) => {
+  return api.post("/users/register", userData);
 };
+
+
+// ==============================
+// Admin Creates Admin / Agent
+// ==============================
+
+export const registerUserByAdmin = (userData) => {
+  return api.post("/users/register/admin", userData);
+};
+
+
+// ==============================
+// Login
+// ==============================
+
+export const loginUser = (credentials) => {
+  return api.post("/users/login", credentials);
+};
+
+
+// ==============================
+// Refresh Access Token
+// ==============================
+
+export const refreshAccessToken = () => {
+  return api.post("/users/refresh-token");
+};
+
+
+// ==============================
+// Logout
+// ==============================
 
 export const logoutUser = () => {
-    return api.post("/users/logout");
+  return api.post("/users/logout");
 };
+
+
+// ==============================
+// Change Current Password
+// ==============================
+
+export const changeCurrentPassword = (passwordData) => {
+  return api.patch("/users/change-password", passwordData);
+};
+
+
+// ==============================
+// Get Current User
+// ==============================
 
 export const getCurrentUser = () => {
-    return api.get("/users/current-user");
+  return api.get("/users/me");
 };
 
-export const registerUser = (data) => {
-    return api.post("/users/register", data);
+
+// ==============================
+// Update Current User Profile
+// ==============================
+
+export const updateProfile = (profileData) => {
+  return api.patch("/users/profile", profileData);
 };
 
-export const sendOTP = (data) => {
-    return api.post("/users/send-otp", data);
+
+// ==============================
+// Get All Users
+// ==============================
+
+export const getAllUsers = (params = {}) => {
+  return api.get("/users", {
+    params,
+  });
 };
 
-export const verifyOtp = (data) => {
-    return api.post("/users/verify-otp", data);
-};
 
-export const forgotPassword = (data) => {
-    return api.post("/users/forgot-password", data);
-};
+// ==============================
+// Search Users
+// ==============================
 
-export const changePassword = (data) => {
-    return api.post("/users/change-password", data);
+export const getUsersBySearch = (params = {}) => {
+  return api.get("/users/search", {
+    params,
+  });
 };

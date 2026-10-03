@@ -33,18 +33,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // useEffect(() => {
-
-  //   fetchCurrentUser();
-
-  // }, []);
   useEffect(() => {
   const authRoutes = [
-    "/auth/login-activate",
-    "/auth/register",
-    "/auth/verify-otp",
-    "/auth/forgot-password",
-    "/auth/reset-password",
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+
   ];
 
   if (authRoutes.includes(window.location.pathname)) {

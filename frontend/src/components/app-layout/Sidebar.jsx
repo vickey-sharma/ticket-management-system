@@ -11,7 +11,7 @@ import {
 const Sidebar = ({ user, isOpen, onClose }) => {
   const navigate = useNavigate();
 
-  const role = user?.role?.toUpperCase();
+  const role = user?.role?.trim().toLowerCase();
 
   const navigationItems = [
     {
@@ -20,14 +20,14 @@ const Sidebar = ({ user, isOpen, onClose }) => {
       icon: LayoutDashboard,
     },
     {
-      label: "Tickets",
+      label: role === "agent" ? "Assigned Tickets" : "Tickets",
       path: "/tickets",
       icon: Ticket,
     },
   ];
 
-  // Users management is available only for ADMIN
-  if (role === "ADMIN") {
+  // Only ADMIN can manage users
+  if (role === "admin") {
     navigationItems.push({
       label: "Users",
       path: "/users",
@@ -37,7 +37,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/auth/login-activate");
+    navigate("/auth/login");
   };
 
   return (
@@ -71,8 +71,13 @@ const Sidebar = ({ user, isOpen, onClose }) => {
             </div>
 
             <div className="text-left">
-              <h1 className="text-lg font-bold tracking-tight">Helpdesk</h1>
-              <p className="text-[11px] text-white/50">Support Center</p>
+              <h1 className="text-lg font-bold tracking-tight">
+                Helpdesk
+              </h1>
+
+              <p className="text-[11px] text-white/50">
+                Support Center
+              </p>
             </div>
           </button>
 
@@ -143,7 +148,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
                 {user?.fullName || "User"}
               </p>
 
-              <p className="truncate text-xs text-white/45">
+              <p className="truncate text-xs capitalize text-white/45">
                 {user?.role || "User"}
               </p>
             </div>
