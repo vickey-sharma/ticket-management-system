@@ -8,6 +8,9 @@ import { useAuth } from "../hooks/useAuth";
 
 export default function AppLayout() {
   const { user } = useAuth();
+
+  console.log("APP LAYOUT USER:", user);
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

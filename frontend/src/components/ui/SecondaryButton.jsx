@@ -1,18 +1,40 @@
-export default function SecondaryButton({
-  text,
-  onClick,
+const SecondaryButton = ({
+  children,
   type = "button",
+  onClick,
   disabled = false,
+  fullWidth = false,
   className = "",
-}) {
+  ...props
+}) => {
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`w-full bg-slate-200 text-slate-700 py-2 rounded-lg mt-0 disabled:opacity-50 transition-all duration-300 hover:bg-slate-300 hover:-translate-y-[2px] ${className}`}
+      className={`
+        inline-flex h-11 items-center justify-center gap-2
+        rounded-xl border border-gray-200
+        bg-white px-5
+        text-sm font-semibold text-gray-700
+        shadow-sm transition-all duration-200
+        hover:border-gray-300
+        hover:bg-gray-50
+        hover:text-gray-900
+        focus:outline-none
+        focus:ring-2
+        focus:ring-gray-200
+        active:scale-[0.98]
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
+      {...props}
     >
-      {text}
+      {children}
     </button>
   );
-}
+};
+
+export default SecondaryButton;

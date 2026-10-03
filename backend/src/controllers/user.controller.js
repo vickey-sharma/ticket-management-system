@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 
 
@@ -343,21 +344,6 @@ return res
 
 });
 
-const getCurrentUser = asyncHandler(async(req, res)=> {
-
-   const currentUser = req.user;
-
-   if(!currentUser){
-    throw new ApiError(400, "Current user not found");
-   }
-
-   return res
-   .status(200)
-   .json(new ApiResponse(200, { user : currentUser }, "Current user found"))
-
-});
-
-
 const updateProfileController = asyncHandler(async(req, res)=> {
 
   const { fullName, email } = req.body;
@@ -381,6 +367,12 @@ if(!currentUser){
   throw new ApiError(404, "User not found")
 }
 
+const doesEmailIdAlreadyExists = await User.findOne({
+  _id: { $ne: userId },
+  email: filteredEmail});
+if(doesEmailIdAlreadyExists){
+  throw new ApiError(400, "Email Id already in use, try a different one")
+};
 
   currentUser.fullName = filteredFullName;
   currentUser.email = filteredEmail;
@@ -391,6 +383,19 @@ return res
 .json(new ApiResponse(200, {}, "Profile updated successfully"))
 });
 
+const getCurrentUser = asyncHandler(async(req, res)=> {
+
+   const currentUser = req.user;
+
+   if(!currentUser){
+    throw new ApiError(400, "Current user not found");
+   }
+
+   return res
+   .status(200)
+   .json(new ApiResponse(200, { user : currentUser }, "Current user found"))
+
+});
 
 const getAllUsers = asyncHandler(async(req, res)=> {
 
@@ -434,28 +439,40 @@ throw new ApiError(401, "Unauthorized role");
   if(currentUserRole !== "admin"){
   throw new ApiError(403, "Unauthorized access")
 };
-
-   const name = req.query.name?.trim();
-const email = req.query.email?.trim().toLowerCase();
+const search = req.query.search?.trim();
 const role = req.query.role?.trim().toLowerCase();
 
-   
 const filter = {
   isDeleted: false,
 };
 
-if (name) {
-  filter.fullName = {
-    $regex: name,
-    $options: "i",
-  };
-}
+if (search) {
+  filter.$or = [
+    {
+      fullName: {
+        $regex: search,
+        $options: "i",
+      },
+    },
+    {
+      email: {
+        $regex: search,
+        $options: "i",
+      },
+    },
+    {
+      role: {
+        $regex: search,
+        $options: "i",
+      },
+    },
+  ];
 
-if (email) {
-  filter.email = {
-    $regex: email,
-    $options: "i",
-  };
+  if (mongoose.Types.ObjectId.isValid(search)) {
+    filter.$or.push({
+      _id: search,
+    });
+  }
 }
 
 if (role) {
@@ -467,8 +484,6 @@ if (role) {
 
   filter.role = role;
 }
-
-
 
      const allUsers = await User.find(filter)
         .select("_id fullName email role")

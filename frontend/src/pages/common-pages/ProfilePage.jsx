@@ -1,217 +1,197 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getOwnProfileDetails, updateOwnProfileDetails, } from "../../services/userService";
-import { getCurrentUser } from "../../services/dashboardService";
 
-import PageHeader from "../../components/page-layout/PageHeader";
-import PageCard from "../../components/auth/PageCard";
-import InputField from "../../components/ui/InputField";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { User } from "lucide-react";
+
 import PrimaryButton from "../../components/ui/PrimaryButton";
 import SecondaryButton from "../../components/ui/SecondaryButton";
-import ToggleSwitch from "../../components/ui/ToggleSwitch";
-import toast from "react-hot-toast";
-import DetailField from "../../components/ui/DetailField";
 
-export default function ProfileDetailsPage() {
+import {
+  getCurrentUser,
+  updateProfile,
+} from "../../services/authService";
 
-  const { state } = useLocation();
+import { useAuth } from "../../hooks/useAuth";
 
-  const navigate = useNavigate();
+export default function ProfilePage() {
+  const { user, setUser } = useAuth();
 
- const [user, setUser] = useState({
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-  role: "",
-  companyName: "",
-  fullAddress: "",
-  city: "",
-  state: "",
-  pincode: "",
-  isActive: false,
-  isDeleted: false,
-});
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+  });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(()=>{
-    fetchCurrentUserDetails();
-  }, []);
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        fullName: user.fullName || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
-  const fetchCurrentUserDetails = async ()=> {
-     try {
-        const response = await getOwnProfileDetails();
-    // console.log(response);
-        setUser(response.data.data.user);
-    
-        // console.log(user);
-    
-      } catch (error) {
-        // console.log(error);
-      } finally {
-        setLoading(false)
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      fullName: user?.fullName || "",
+      email: user?.email || "",
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!formData.fullName.trim() || !formData.email.trim()) {
+      toast.error("Full name and email are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await updateProfile({
+        fullName: formData.fullName,
+        email: formData.email,
+      });
+
+      const response = await getCurrentUser();
+      const updatedUser = response.data?.data?.user;
+
+      if (updatedUser) {
+        setUser(updatedUser);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(updatedUser)
+        );
       }
-  }
 
-
-  const handleSubmit = () => {
-
-    updateOwnProfileDetails(user);
-navigate(-1)
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update profile"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-full justify-center py-3">
+      <div className="w-full max-w-xl space-y-6">
+        {/* Header */}
+        <section>
+          <div className="flex flex-col items-center text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#E5F4F1] text-[#0F766E]">
+              <User size={21} />
+            </div>
 
-      <PageHeader
-        title="My Profile"
-        description="View and update your information."
-      />
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-[#073B3A]">
+              My Profile
+            </h1>
 
-      <PageCard>
+            <p className="mt-1 text-sm text-gray-500">
+              Manage your profile information.
+            </p>
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Form Card */}
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-7">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Full Name */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
 
-          <InputField
-            label="Full Name"
-            type="text"
-            value={user.fullName}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                fullName: e.target.value,
-              })
-            }
-          />
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                className="
+                  h-11 w-full rounded-xl border border-gray-200
+                  bg-gray-50 px-4 text-sm text-gray-800
+                  outline-none transition
+                  placeholder:text-gray-400
+                  focus:border-[#0F766E]/40
+                  focus:bg-white
+                  focus:ring-2
+                  focus:ring-[#0F766E]/10
+                "
+              />
+            </div>
 
-          <DetailField
-  label="Email"
-  value={user.email}
-/>
+            {/* Email */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Email
+              </label>
 
-          <InputField
-            label="Phone Number"
-            name="phoneNumber"
-            type="tel"
-            value={user.phoneNumber}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                phoneNumber: e.target.value.replace(/\D/g, "").slice(0, 10),
-              })
-            }
-          />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="
+                  h-11 w-full rounded-xl border border-gray-200
+                  bg-gray-50 px-4 text-sm text-gray-800
+                  outline-none transition
+                  placeholder:text-gray-400
+                  focus:border-[#0F766E]/40
+                  focus:bg-white
+                  focus:ring-2
+                  focus:ring-[#0F766E]/10
+                "
+              />
+            </div>
 
-          <DetailField
-  label="Role"
-  value={user.role}
-/>
+            {/* Role */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Role
+              </label>
 
-         {(user.role === "client") && (
-  <div className="md:col-span-2">
+              <div className="flex h-11 items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
+                <span className="text-sm capitalize text-gray-500">
+                  {user?.role || "User"}
+                </span>
+              </div>
+            </div>
 
-    {/* Full Address */}
-    <InputField
-      label="Full Address"
-      name="fullAddress"
-      value={user.fullAddress}
-      onChange={(e) =>
-        setUser({
-          ...user,
-          fullAddress: e.target.value,
-        })
-      }
-    />
+            {/* Actions */}
+            <div className="flex justify-end gap-3 border-t border-gray-100 pt-5">
+              <SecondaryButton
+                type="button"
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Cancel
+              </SecondaryButton>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-
-      {/* Company Name */}
-      <InputField
-        label="Company Name"
-        name="companyName"
-        value={user.companyName}
-        onChange={(e) =>
-          setUser({
-            ...user,
-            companyName: e.target.value,
-          })
-        }
-      />
-
-      {/* City */}
-      <InputField
-        label="City"
-        name="city"
-        value={user.city}
-        onChange={(e) =>
-          setUser({
-            ...user,
-            city: e.target.value,
-          })
-        }
-      />
-
-      {/* State */}
-      <InputField
-        label="State"
-        name="state"
-        value={user.state}
-        onChange={(e) =>
-          setUser({
-            ...user,
-            state: e.target.value,
-          })
-        }
-      />
-
-      {/* Pincode */}
-      <InputField
-        label="Pincode"
-        name="pincode"
-        value={user.pincode}
-        onChange={(e) =>
-          setUser({
-            ...user,
-            pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
-          })
-        }
-      />
-
-    </div>
-  </div>
-)}
-
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-<ToggleSwitch
-  label="Account Active"
-  checked={user.isActive}
-  onChange={()=> {
-    toast.error("Account status can't be changed here.");
-  }}
-/>
-
-<ToggleSwitch
-  label="Temporarily Disable Account"
-  checked={user.isDeleted}
-  onChange={()=> {
-    toast.error("Account can't be disabled here.");
-  }}
-/>
-
-        </div>
-
-        <div className="mt-8 flex justify-end gap-3">
-
-          <SecondaryButton text="Cancel" onClick={() => navigate(-1)} />
-
-        <PrimaryButton onClick={handleSubmit} text="Save Changes"/>
-
-        </div>
-
-      </PageCard>
-
+              <PrimaryButton
+                type="submit"
+                loading={loading}
+              >
+                Save Changes
+              </PrimaryButton>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   );
 }

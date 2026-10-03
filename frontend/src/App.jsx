@@ -5,7 +5,13 @@ import { Toaster } from "react-hot-toast";
 
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+
 import Dashboard from "./pages/dashboard/Dashboard";
+import UsersPage from "./pages/user-management/UserPage";
+
+import ChangePasswordPage from "./pages/common-pages/ChangePasswordPage";
+import ProfilePage from "./pages/common-pages/ProfilePage";
+
 import AppLayout from "./layouts/AppLayout";
 
 function App() {
@@ -36,6 +42,21 @@ function App() {
             path="/dashboard"
             element={<Dashboard />}
           />
+
+          <Route
+            path="/dashboard/users"
+            element={<UsersPage />}
+          /> 
+
+          <Route
+  path="/dashboard/profile"
+  element={<ProfilePage />}
+/>
+
+<Route
+  path="/dashboard/change-password"
+  element={<ChangePasswordPage />}
+/>
         </Route>
 
         {/* Fallback */}

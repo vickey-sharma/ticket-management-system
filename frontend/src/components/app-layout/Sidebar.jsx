@@ -1,11 +1,5 @@
 
 import {
-  LayoutDashboard,
-  Ticket,
-  Users,
-  User,
-  LockKeyhole,
-  PlusCircle,
   X,
   LogOut,
 } from "lucide-react";
@@ -14,88 +8,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { logoutUser } from "../../services/authService";
 import toast from "react-hot-toast";
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
 
-const sidebarConfig = {
-  customer: [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Create Ticket",
-      path: "/tickets/create",
-      icon: PlusCircle,
-    },
-    {
-      name: "My Tickets",
-      path: "/tickets",
-      icon: Ticket,
-    },
-    {
-      name: "My Profile",
-      path: "/profile",
-      icon: User,
-    },
-    {
-      name: "Change Password",
-      path: "/change-password",
-      icon: LockKeyhole,
-    },
-  ],
-
-  agent: [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Assigned Tickets",
-      path: "/tickets",
-      icon: Ticket,
-    },
-    {
-      name: "My Profile",
-      path: "/profile",
-      icon: User,
-    },
-    {
-      name: "Change Password",
-      path: "/change-password",
-      icon: LockKeyhole,
-    },
-  ],
-
-  admin: [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "All Tickets",
-      path: "/tickets",
-      icon: Ticket,
-    },
-    {
-      name: "Users",
-      path: "/users",
-      icon: Users,
-    },
-    {
-      name: "My Profile",
-      path: "/profile",
-      icon: User,
-    },
-    {
-      name: "Change Password",
-      path: "/change-password",
-      icon: LockKeyhole,
-    },
-  ],
-};
+import { sidebarConfig } from "../../config/sidebarConfig";
 
 export default function Sidebar({
   user,
@@ -139,18 +54,17 @@ export default function Sidebar({
 
       {/* Sidebar */}
       <aside
-       className={`
-  fixed inset-y-0 left-0 z-50
-  flex h-screen w-64 shrink-0 flex-col
-  border-r border-gray-200 bg-white
-  transition-transform duration-200
-  lg:translate-x-0
-  ${open ? "translate-x-0" : "-translate-x-full"}
-`}
+        className={`
+          fixed inset-y-0 left-0 z-50
+          flex h-screen w-64 shrink-0 flex-col
+          border-r border-gray-200 bg-white
+          transition-transform duration-200
+          lg:translate-x-0
+          ${open ? "translate-x-0" : "-translate-x-full"}
+        `}
       >
         {/* Brand */}
         <div className="flex h-16 shrink-0 items-center border-b border-gray-100 px-5">
-
           <div className="mb-0 flex flex-col items-center">
             <img
               src={logo}
@@ -180,21 +94,22 @@ export default function Sidebar({
               const Icon = item.icon;
 
               return (
-                <NavLink
-                  key={item.path + item.name}
-                  to={item.path}
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                      isActive
-                        ? "bg-[#E5F4F1] text-[#0F766E]"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-[#073B3A]"
-                    }`
-                  }
-                >
-                  <Icon size={18} strokeWidth={1.8} />
-                  <span>{item.name}</span>
-                </NavLink>
+               <NavLink
+  key={item.path + item.name}
+  to={item.path}
+  end
+  onClick={onClose}
+  className={({ isActive }) =>
+    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+      isActive
+        ? "bg-[#E5F4F1] text-[#0F766E]"
+        : "text-gray-600 hover:bg-gray-50 hover:text-[#073B3A]"
+    }`
+  }
+>
+  <Icon size={18} strokeWidth={1.8} />
+  <span>{item.name}</span>
+</NavLink>
               );
             })}
           </div>
