@@ -1,4 +1,4 @@
-
+import logo from "../assets/logo.png"
 
 const AuthLayout = ({ children }) => {
   return (
@@ -15,17 +15,18 @@ const AuthLayout = ({ children }) => {
       <div className="relative z-10 flex min-h-screen flex-col items-center px-4 py-8 sm:px-6">
 
         {/* Brand */}
-        <div className="mb-8 flex flex-col items-center">
+        <div className="mb-6 flex flex-col items-center">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#073B3A] shadow-sm">
-            <img
-              // src={watchdogLogoTransparent}
-              alt="Watchdog"
-              className="h-9 w-9 object-contain"
-            />
-          </div>
+          {/* Brand */}
+<div className="mb-0 flex flex-col items-center">
+  <img
+    src={logo}
+    alt="Company Logo"
+    className="h-18 w-auto object-contain"
+  />
+</div>
 
-          <div className="mt-3 text-center">
+          {/* <div className="mt-3 text-center">
             <h2 className="text-base font-bold tracking-tight text-[#073B3A]">
               Watchdog
             </h2>
@@ -33,7 +34,7 @@ const AuthLayout = ({ children }) => {
             <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0F766E]">
               Helpdesk
             </p>
-          </div>
+          </div> */}
 
         </div>
 

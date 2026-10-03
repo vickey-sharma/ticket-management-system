@@ -1,233 +1,237 @@
-import { useState, useRef } from "react";
-import AuthCard from "../../components/auth/AuthCard.jsx";
-import AuthLayout from "../../layouts/AuthLayout.jsx";
-import InputField from "../../components/ui/InputField.jsx";
-import PrimaryButton from "../../components/ui/PrimaryButton.jsx";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { sendOTP } from "../../services/authService";
-import toast from "react-hot-toast";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { useState } from "react";
 
+import { Link, useNavigate } from "react-router-dom";
+
+import { ArrowRight, UserPlus } from "lucide-react";
+
+import toast from "react-hot-toast";
+
+import AuthLayout from "../../layouts/AuthLayout.jsx";
+
+import AuthCard from "../../components/auth/AuthCard.jsx";
+
+import InputField from "../../components/ui/InputField.jsx";
+
+import { registerCustomer } from "../../services/authService.js";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
-   fullName: "",
-  email: "",
-  phoneNumber: "",
-  // password: "",
-  companyName: ""
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  // console.log("key is :", import.meta.env.VITE_TURNSTILE_SITE_KEY)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-const [turnstileToken, setTurnstileToken] = useState("");
-const [loading, setLoading] = useState(false);
-const navigate = useNavigate();
-const turnstileRef = useRef(null);
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  const handleRegister = async (e)=> {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    // password
-    const { fullName, email, phoneNumber,  companyName } = form;
+    const fullName = form.fullName.trim();
+    const email = form.email.trim().toLowerCase();
+    const password = form.password;
+    const confirmPassword = form.confirmPassword;
 
-    //  if(!fullName || !email || !phoneNumber || !password || !companyName){
-    if(!fullName || !email || !phoneNumber || !companyName){
-       toast.error("All fields are required");
-    return;
+    if (!fullName || !email || !password || !confirmPassword) {
+      toast.error("All fields are required");
+      return;
     }
 
-    // || password.trim() === "" 
-     if(fullName.trim() === "" || email.trim() === "" || phoneNumber.trim() === "" || companyName.trim() === ""){
-       toast.error("All fields are required");
-    return;
+    if (fullName.length < 2) {
+      toast.error("Please enter a valid name");
+      return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!/^\d{10}$/.test(phoneNumber.trim())) {
-  toast.error("Invalid Number");
-  return;
-}
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
-const emailRegex =
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
 
-if (!emailRegex.test(email.trim())) {
-    toast.error("Invalid Email");
-    return;
-}
-
- if (!turnstileToken) {
-        toast.error("Please verify that you are human.");
-        return;
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
     }
 
     try {
-setLoading(true);
+      setLoading(true);
 
-      const filteredUserDetails = {
-  fullName: fullName.trim(),
-  email: email.trim().toLowerCase(),
-  phoneNumber: phoneNumber.trim(),
-  // password: password.trim(),
-  companyName: companyName.trim(),
-};
+      const registrationData = {
+        fullName,
+        email,
+        password,
+        confirmPassword,
+      };
 
+      const response = await registerCustomer(registrationData);
 
-await sendOTP({
-        email: filteredUserDetails.email,
-        purpose: "register",
-         turnstileToken
+      if (response.data.success) {
+        toast.success("Account created successfully");
+        navigate("/auth/login");
       }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Unable to create your account"
       );
-
-      turnstileRef.current?.reset();
-setTurnstileToken("");
-
-
-      // store backup
-localStorage.setItem("email", filteredUserDetails.email);
-localStorage.setItem("purpose", "register");
-localStorage.setItem("filteredUserDetails", JSON.stringify(filteredUserDetails));
-
-     navigate("/auth/verify-otp", {
-   state: {
-      email: filteredUserDetails.email,
-       purpose: "register",
-      filteredUserDetails
-   }
-});
-
-    }catch (error) {
-
-    console.log("REGISTER ERROR:", error.response?.data);
-
-    turnstileRef.current?.reset();
-    setTurnstileToken("");
-
-    toast.error(
-        error.response?.data?.message || "Something went wrong."
-    );
-}finally {
-    setLoading(false);
-}
-  }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthLayout>
-      <AuthCard className="animate-authReveal py-4">
+      <AuthCard className="animate-authReveal">
+        {/* Heading */}
+        <div className="mb-7 text-center">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E5F4F1] text-[#0F766E]">
+            <UserPlus size={22} strokeWidth={2} />
+          </div>
 
-        {/* Title */}
-         <h1 className="text-3xl font-bold text-center mb-4">
-                  Sign Up
-                </h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[#073B3A] sm:text-3xl">
+            Create your account
+          </h1>
 
-  {/* Full Name */}
-        <InputField
-          label="Full Name"
-          value={form.fullName}
-                      placeholder="Enter Full Name"
+          <p className="mt-2 text-sm leading-6 text-gray-500">
+            Join the helpdesk and start managing your support requests.
+          </p>
+        </div>
 
-          onChange={(e) =>
-            setForm({ ...form, fullName: e.target.value })
-          }
-/>
+        {/* Registration form */}
+        <form onSubmit={handleRegister} className="space-y-4">
+          {/* Full name */}
+          <InputField
+            label="Full name"
+            type="text"
+            name="fullName"
+            value={form.fullName}
+            placeholder="Enter your full name"
+            autoComplete="name"
+            onChange={handleChange}
+          />
 
-        {/* Email */}
-        <InputField
-          label="Email address"
-          value={form.email}
-                      placeholder="Enter Email"
+          {/* Email */}
+          <InputField
+            label="Email address"
+            type="email"
+            name="email"
+            value={form.email}
+            placeholder="you@example.com"
+            autoComplete="email"
+            onChange={handleChange}
+          />
 
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-        />
+          {/* Password */}
+          <InputField
+            label="Password"
+            type="password"
+            name="password"
+            value={form.password}
+            placeholder="Create a password"
+            autoComplete="new-password"
+            onChange={handleChange}
+          />
 
+          {/* Confirm password */}
+          <InputField
+            label="Confirm password"
+            type="password"
+            name="confirmPassword"
+            value={form.confirmPassword}
+            placeholder="Confirm your password"
+            autoComplete="new-password"
+            onChange={handleChange}
+          />
 
-        {/* Phone Number */}
-      <InputField
-          label="Phone Number"
-          type="tel"
-          value={form.phoneNumber}
-                      placeholder="Enter Phone Number"
+          {/* Account information */}
+          <div className="rounded-xl bg-[#F3F8F7] px-4 py-3">
+            <p className="text-xs leading-5 text-gray-500">
+              Your account will be created as a customer account.
+            </p>
+          </div>
 
-         onChange={(e) =>
-  setForm({
-    ...form,
-    phoneNumber: e.target.value.replace(/\D/g, "").slice(0, 10),
-  })
-}
-        />
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="
+              group
+              flex h-12 w-full items-center justify-center gap-2
+              rounded-xl
+              bg-[#073B3A]
+              px-5
+              text-sm font-semibold text-white
+              shadow-sm
+              transition-all duration-200
+              hover:bg-[#0A4D4A]
+              hover:shadow-md
+              focus:outline-none
+              focus:ring-2
+              focus:ring-[#0F766E]/30
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+              active:scale-[0.99]
+            "
+          >
+            {loading ? (
+              "Creating account..."
+            ) : (
+              <>
+                Create account
 
-{/* Company Name */}
-<InputField
-  label="Company Name"
-  value={form.companyName}
-  placeholder="Enter Company Name"
-  onChange={(e) =>
-    setForm({
-      ...form,
-      companyName: e.target.value,
-    })
-  }
-/>
+                <ArrowRight
+                  size={17}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </>
+            )}
+          </button>
+        </form>
 
+        {/* Login divider */}
+        <div className="my-7 flex items-center gap-3">
+          <div className="h-px flex-1 bg-gray-100" />
 
-        {/* Password */}
-        {/* <InputField
-          label="Password"
-          type="password"
-          value={form.password}
-                      placeholder="Enter Password"
-onChange={(e) =>
-  setForm({ ...form, password: e.target.value })
-}
-        /> */}
+          <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+            Already registered?
+          </span>
 
+          <div className="h-px flex-1 bg-gray-100" />
+        </div>
 
-{/* <p className="text-sm text-gray-600 mt-2">
-  We'll send a <span className="font-semibold text-gray-800">verification OTP</span> to your email for account activation.
-</p> */}
-
-<p className="text-sm text-gray-700 mt-2">
-  A <span className="font-semibold text-[#56BD05]">6-digit OTP</span> will be sent to your email.
-</p>
-
-
-{/* Turnstile */}
-<Turnstile
-    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-      ref={turnstileRef}
-    className="mt-3"
-      options={{
-    theme: "light",
-     size: "flexible",
-  }}
-    onSuccess={(token) => {
-        setTurnstileToken(token);
-    }}
-    onExpire={() => {
-        setTurnstileToken("");
-    }}
-    onError={() => {
-        setTurnstileToken("");
-        toast.error("Human verification failed. Please try again.");
-    }}
-/>
-
-        {/* Button */}
-       <PrimaryButton text={loading ? "Sending OTP..." : "Create account & send OTP"} onClick={handleRegister} disabled={loading} className="mt-4"/>
-
-        {/* Login link */}
-        <p className="text-sm mt-4 text-gray-600">
-          Already have an account?{" "}
-         <Link to="/auth/login-activate" className="text-blue-500 hover:underline">
-  Log in
-</Link>
-        </p>
-
+        {/* Login */}
+        <Link
+          to="/auth/login"
+          className="
+            flex h-11 w-full items-center justify-center
+            rounded-xl
+            border border-gray-200
+            bg-white
+            text-sm font-semibold text-[#073B3A]
+            transition-all duration-200
+            hover:border-[#0F766E]/30
+            hover:bg-[#F7F9F9]
+          "
+        >
+          Sign in instead
+        </Link>
       </AuthCard>
     </AuthLayout>
   );

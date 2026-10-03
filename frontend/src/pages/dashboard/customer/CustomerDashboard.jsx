@@ -9,15 +9,10 @@ import StatsCard from "../../../components/app-layout/StatsCard";
 import DashboardHero from "../../../components/dashboard/DashboardHero";
 import TicketStatusChart from "../../../components/dashboard/TicketStatusChart";
 import RecentTickets from "../../../components/dashboard/RecentTickets";
-import RecentActivity from "../../../components/dashboard/RecentActivity";
 
 export default function CustomerDashboard({ user }) {
-  /*
-   * Temporary values.
-   * These will be replaced with real API data.
-   *
-   * Customers should only see their own tickets.
-   */
+  // Temporary data.
+  // These values will come from tickets created by the logged-in customer.
   const stats = {
     total: 0,
     open: 0,
@@ -26,18 +21,16 @@ export default function CustomerDashboard({ user }) {
     closed: 0,
   };
 
-  const recentTickets = [];
-  const recentActivities = [];
+  const myTickets = [];
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
       <DashboardHero
         user={user}
         openTickets={stats.open + stats.inProgress}
+        showCreateTicket={true}
       />
 
-      {/* Overview */}
       <section>
         <div className="mb-4">
           <h2 className="text-base font-semibold text-gray-900">
@@ -76,26 +69,16 @@ export default function CustomerDashboard({ user }) {
         </div>
       </section>
 
-      {/* Status + Activity */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <TicketStatusChart
-          stats={{
-            open: stats.open,
-            inProgress: stats.inProgress,
-            resolved: stats.resolved,
-            closed: stats.closed,
-          }}
-        />
-
-        <RecentActivity
-          activities={recentActivities}
-        />
-      </div>
-
-      {/* My Recent Tickets */}
-      <RecentTickets
-        tickets={recentTickets}
+      <TicketStatusChart
+        stats={{
+          open: stats.open,
+          inProgress: stats.inProgress,
+          resolved: stats.resolved,
+          closed: stats.closed,
+        }}
       />
+
+      <RecentTickets tickets={myTickets} />
     </div>
   );
 }

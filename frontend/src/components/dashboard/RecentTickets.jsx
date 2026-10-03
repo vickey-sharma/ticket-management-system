@@ -1,6 +1,6 @@
 import { ArrowRight, Ticket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import StatusBadge from "../app-layout/StatusBadge";
+import StatusBadge from "../ui/StatusBadge";
 
 const RecentTickets = ({
   tickets = [],

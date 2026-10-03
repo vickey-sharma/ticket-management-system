@@ -1,171 +1,227 @@
-import { NavLink, useNavigate } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Ticket,
   Users,
-  LogOut,
-  Headset,
+  User,
+  LockKeyhole,
+  PlusCircle,
   X,
+  LogOut,
 } from "lucide-react";
 
-const Sidebar = ({ user, isOpen, onClose }) => {
-  const navigate = useNavigate();
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { logoutUser } from "../../services/authService";
+import toast from "react-hot-toast";
+import logo from "../../assets/logo.png"
 
-  const role = user?.role?.trim().toLowerCase();
-
-  const navigationItems = [
+const sidebarConfig = {
+  customer: [
     {
-      label: "Dashboard",
+      name: "Dashboard",
       path: "/dashboard",
       icon: LayoutDashboard,
     },
     {
-      label: role === "agent" ? "Assigned Tickets" : "Tickets",
+      name: "Create Ticket",
+      path: "/tickets/create",
+      icon: PlusCircle,
+    },
+    {
+      name: "My Tickets",
       path: "/tickets",
       icon: Ticket,
     },
-  ];
+    {
+      name: "My Profile",
+      path: "/profile",
+      icon: User,
+    },
+    {
+      name: "Change Password",
+      path: "/change-password",
+      icon: LockKeyhole,
+    },
+  ],
 
-  // Only ADMIN can manage users
-  if (role === "admin") {
-    navigationItems.push({
-      label: "Users",
+  agent: [
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Assigned Tickets",
+      path: "/tickets",
+      icon: Ticket,
+    },
+    {
+      name: "My Profile",
+      path: "/profile",
+      icon: User,
+    },
+    {
+      name: "Change Password",
+      path: "/change-password",
+      icon: LockKeyhole,
+    },
+  ],
+
+  admin: [
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "All Tickets",
+      path: "/tickets",
+      icon: Ticket,
+    },
+    {
+      name: "Users",
       path: "/users",
       icon: Users,
-    });
-  }
+    },
+    {
+      name: "My Profile",
+      path: "/profile",
+      icon: User,
+    },
+    {
+      name: "Change Password",
+      path: "/change-password",
+      icon: LockKeyhole,
+    },
+  ],
+};
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/auth/login");
+export default function Sidebar({
+  user,
+  open = false,
+  onClose,
+}) {
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
+
+  const role = user?.role?.trim().toLowerCase();
+  const navigation = sidebarConfig[role] || [];
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      // Logout locally even if the API request fails.
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+
+      navigate("/auth/login", {
+        replace: true,
+      });
+
+      toast.success("Logged out successfully");
+    }
   };
 
   return (
     <>
       {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+      {open && (
+        <button
+          type="button"
+          aria-label="Close sidebar"
           onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`
-          fixed left-0 top-0 z-50 flex h-screen w-64 flex-col
-          bg-[#073B3A] text-white
-          transition-transform duration-300
-          lg:static lg:translate-x-0
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+       className={`
+  fixed inset-y-0 left-0 z-50
+  flex h-screen w-64 shrink-0 flex-col
+  border-r border-gray-200 bg-white
+  transition-transform duration-200
+  lg:translate-x-0
+  ${open ? "translate-x-0" : "-translate-x-full"}
+`}
       >
-        {/* Logo */}
-        <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-3"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#073B3A]">
-              <Headset size={22} strokeWidth={2.5} />
-            </div>
+        {/* Brand */}
+        <div className="flex h-16 shrink-0 items-center border-b border-gray-100 px-5">
 
-            <div className="text-left">
-              <h1 className="text-lg font-bold tracking-tight">
-                Helpdesk
-              </h1>
+          <div className="mb-0 flex flex-col items-center">
+            <img
+              src={logo}
+              alt="Company Logo"
+              className="h-13 w-auto object-contain"
+            />
+          </div>
 
-              <p className="text-[11px] text-white/50">
-                Support Center
-              </p>
-            </div>
-          </button>
-
-          {/* Mobile close */}
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white lg:hidden"
+            className="ml-auto rounded-lg p-2 text-gray-400 hover:bg-gray-100 lg:hidden"
             aria-label="Close sidebar"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6">
-          <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
+          <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">
             Workspace
           </p>
 
-          <div className="space-y-1.5">
-            {navigationItems.map((item) => {
+          <div className="space-y-1">
+            {navigation.map((item) => {
               const Icon = item.icon;
 
               return (
                 <NavLink
-                  key={item.path}
+                  key={item.path + item.name}
                   to={item.path}
                   onClick={onClose}
                   className={({ isActive }) =>
-                    `
-                    group flex items-center gap-3 rounded-xl px-3.5 py-3
-                    text-sm font-medium transition-all duration-200
-                    ${
+                    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                       isActive
-                        ? "bg-white text-[#073B3A] shadow-sm"
-                        : "text-white/65 hover:bg-white/10 hover:text-white"
-                    }
-                    `
+                        ? "bg-[#E5F4F1] text-[#0F766E]"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-[#073B3A]"
+                    }`
                   }
                 >
-                  {({ isActive }) => (
-                    <>
-                      <Icon
-                        size={19}
-                        strokeWidth={isActive ? 2.5 : 2}
-                        className="shrink-0"
-                      />
-
-                      <span>{item.label}</span>
-                    </>
-                  )}
+                  <Icon size={18} strokeWidth={1.8} />
+                  <span>{item.name}</span>
                 </NavLink>
               );
             })}
           </div>
         </nav>
 
-        {/* User section */}
-        <div className="border-t border-white/10 p-4">
-          <div className="mb-3 flex items-center gap-3 rounded-xl bg-white/5 p-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold">
-              {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
-            </div>
+        {/* User / Logout */}
+        <div className="shrink-0 border-t border-gray-100 p-3">
+          <div className="mb-2 rounded-xl bg-[#F7F9F9] px-3 py-3">
+            <p className="truncate text-sm font-semibold text-[#073B3A]">
+              {user?.fullName || "User"}
+            </p>
 
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">
-                {user?.fullName || "User"}
-              </p>
-
-              <p className="truncate text-xs capitalize text-white/45">
-                {user?.role || "User"}
-              </p>
-            </div>
+            <p className="mt-0.5 truncate text-xs text-gray-400">
+              {user?.email || ""}
+            </p>
           </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-white/60 transition hover:bg-red-500/10 hover:text-red-300"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
           >
-            <LogOut size={18} />
-            <span>Logout</span>
+            <LogOut size={18} strokeWidth={1.8} />
+            Logout
           </button>
         </div>
       </aside>
     </>
   );
-};
-
-export default Sidebar;
+}

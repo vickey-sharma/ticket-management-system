@@ -5,6 +5,8 @@ import { Toaster } from "react-hot-toast";
 
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import Dashboard from "./pages/dashboard/Dashboard";
+import AppLayout from "./layouts/AppLayout";
 
 function App() {
   return (
@@ -12,13 +14,12 @@ function App() {
       <Toaster position="top-right" />
 
       <Routes>
-        {/* Default route */}
+        {/* Public routes */}
         <Route
           path="/"
           element={<Navigate to="/auth/login" replace />}
         />
 
-        {/* Authentication */}
         <Route
           path="/auth/login"
           element={<LoginPage />}
@@ -28,6 +29,14 @@ function App() {
           path="/auth/register"
           element={<RegisterPage />}
         />
+
+        {/* Protected application layout */}
+        <Route element={<AppLayout />}>
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+        </Route>
 
         {/* Fallback */}
         <Route

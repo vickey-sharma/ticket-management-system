@@ -1,46 +1,67 @@
-import { useState } from "react";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
 
-const AppLayout = ({ children, user }) => {
+import { Menu } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
+
+import Sidebar from "../components/app-layout/Sidebar";
+import { useAuth } from "../hooks/useAuth";
+
+export default function AppLayout() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleOpenSidebar = () => {
-    setSidebarOpen(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setSidebarOpen(false);
-  };
-
   return (
-    <div className="min-h-screen bg-[#F7F9F9]">
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <Sidebar
-          user={user}
-          isOpen={sidebarOpen}
-          onClose={handleCloseSidebar}
-        />
+    <div className="h-screen overflow-hidden bg-[#F7F9F9]">
+      {/* Fixed Sidebar */}
+      <Sidebar
+        user={user}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-        {/* Main area */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Topbar */}
-          <Topbar
-            user={user}
-            onMenuClick={handleOpenSidebar}
-          />
+      {/* Right Side */}
+      <div className="flex h-screen flex-col lg:ml-64">
+        {/* Fixed Top Bar */}
+        <header className="z-30 h-16 shrink-0 border-b border-gray-200 bg-white">
+          <div className="flex h-full items-center px-4 sm:px-6 lg:px-8">
+            {/* Mobile menu */}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="rounded-lg p-2 text-gray-600 transition hover:bg-gray-100 lg:hidden"
+              aria-label="Open sidebar"
+            >
+              <Menu size={21} />
+            </button>
 
-          {/* Page content */}
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-[1600px]">
-              {children}
+            {/* User */}
+            <div className="ml-auto flex items-center gap-3">
+              <div className="hidden text-right sm:block">
+                <p className="text-sm font-semibold text-[#073B3A]">
+                  {user?.fullName || "User"}
+                </p>
+
+                <p className="text-xs capitalize text-gray-400">
+                  {user?.role || ""}
+                </p>
+              </div>
+
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E5F4F1] text-sm font-bold text-[#0F766E]">
+                {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
+              </div>
             </div>
-          </main>
-        </div>
+          </div>
+        </header>
+
+        {/* ONLY THIS AREA SCROLLS */}
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-7xl">
+              <Outlet />
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
-};
-
-export default AppLayout;
+}

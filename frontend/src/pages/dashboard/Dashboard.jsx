@@ -1,32 +1,45 @@
 import AdminDashboard from "./admin/AdminDashboard";
-import ClientDashboard from "./client/ClientDashboard";
+import AgentDashboard from "./agent/AgentDashboard";
+import CustomerDashboard from "./customer/CustomerDashboard";
+
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Dashboard() {
-  // const user = JSON.parse(localStorage.getItem("user"));
-
-  //  console.log(user);
-  // if (!user) {
-  //   return <h1>Loading...</h1>;
-  // }
-
   const { user, loading: authLoading } = useAuth();
-  
-  if (authLoading) {
-    return <div>Loading...</div>;
-  }
-  
-  
 
+  if (authLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-sm text-gray-500">
+          Loading dashboard...
+        </p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const role = user.role?.trim().toLowerCase();
+
+  if (role === "admin") {
+    return <AdminDashboard user={user} />;
+  }
+
+  if (role === "agent") {
+    return <AgentDashboard user={user} />;
+  }
+
+  if (role === "customer") {
+    return <CustomerDashboard user={user} />;
+  }
 
   return (
-    <>
-      {user.role === "client" ? (
-        <ClientDashboard user={user} />
-      ) : (
-        <AdminDashboard user={user} />
-      )}
-    </>
-
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <p className="text-sm text-red-500">
+        Invalid user role.
+      </p>
+    </div>
   );
 }

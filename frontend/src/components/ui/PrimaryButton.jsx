@@ -1,4 +1,3 @@
-id="e2v4ab"
 import { Loader2 } from "lucide-react";
 
 const PrimaryButton = ({
