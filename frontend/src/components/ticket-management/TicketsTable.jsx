@@ -1,240 +1,241 @@
-import React from "react";
 import { Eye } from "lucide-react";
-import DataTable from "../table/DataTable";
-import StatusBadge from "../ui/StatusBadge";
-import LoadingState from "../ui/LoadingState";
+import { useNavigate } from "react-router-dom";
+import StatusBadge from "./StatusBadge";
 
-const getColumns = (role) => [
-  "Ticket Number",
-  "Issue",
-  "Customer / Company",
-  "Product",
-  "Priority",
-  "Department",
-  "Status",
-  ...(role !== "client" ? ["Assigned To", "Created By"] : []),
-  "Created At",
-  "Action",
-];
+const TicketsTable = ({
+  tickets = [],
+  loading = false,
+  onTicketClick,
+}) => {
+  const navigate = useNavigate();
 
-const formatLabel = (value) => {
-  if (!value) return "—";
+  const handleTicketClick = (ticket) => {
+    if (onTicketClick) {
+      onTicketClick(ticket);
+      return;
+    }
 
-  return value
-    .split("_")
-    .map(
-      (word) => word.charAt(0).toUpperCase() + word.slice(1)
-    )
-    .join(" ");
-};
+    if (ticket?._id) {
+      navigate(`/tickets/${ticket._id}`);
+    }
+  };
 
-const formatDate = (date) => {
-  if (!date) return "—";
+  const formatDate = (date) => {
+    if (!date) return "—";
 
-  return new Date(date).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
-const getPriorityColor = (priority) => {
-  switch (priority) {
-    case "high":
-      return "red";
+  const getUserName = (user) => {
+    if (!user) return "—";
 
-    case "medium":
-      return "yellow";
+    if (typeof user === "string") return user;
 
-    case "low":
-      return "green";
+    return user.fullName || user.name || user.email || "—";
+  };
 
-    default:
-      return "gray";
-  }
-};
+  const getPriorityClasses = (priority) => {
+    switch (priority?.toUpperCase()) {
+      case "HIGH":
+        return "bg-red-50 text-red-700";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "open":
-      return "blue";
+      case "MEDIUM":
+        return "bg-orange-50 text-orange-700";
 
-    case "in_progress":
-      return "yellow";
+      case "LOW":
+        return "bg-blue-50 text-blue-700";
 
-    case "resolved":
-      return "green";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
 
-    case "closed":
-      return "gray";
-
-    default:
-      return "gray";
-  }
-};
-
-export default function TicketsTable({
-  tickets,
-  loading,
-  onView,
-  role
-}) {
   if (loading) {
     return (
-      <LoadingState
-        variant="table"
-        rows={8}
-        columns={getColumns(role).length}
-      />
+      <div className="rounded-2xl border border-gray-200 bg-white p-12 shadow-sm">
+        <div className="flex items-center justify-center gap-3 text-sm text-gray-500">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-[#0F766E]" />
+          Loading tickets...
+        </div>
+      </div>
     );
   }
 
-  if (!tickets?.length) {
+  if (!tickets.length) {
     return (
-      <div className="flex min-h-[250px] items-center justify-center text-sm text-slate-500">
-        No tickets found.
+      <div className="rounded-2xl border border-gray-200 bg-white px-6 py-14 text-center shadow-sm">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
+          <Eye size={22} />
+        </div>
+
+        <h3 className="mt-4 text-sm font-semibold text-gray-900">
+          No tickets found
+        </h3>
+
+        <p className="mt-1 text-sm text-gray-500">
+          There are no tickets matching your current filters.
+        </p>
       </div>
     );
   }
 
   return (
-    <DataTable columns={getColumns(role)}>
-      {tickets.map((ticket) => (
-        <tr
-          key={ticket._id}
-          className="transition hover:bg-slate-50"
-        >
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Desktop */}
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[850px]">
+          <thead>
+            <tr className="border-b border-gray-200 bg-gray-50/80">
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Ticket
+              </th>
 
-          {/* Ticket Number */}
-          <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
-            {ticket.ticketNumber || "—"}
-          </td>
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Title
+              </th>
 
-          {/* Issue */}
-          <td className="min-w-[220px] px-6 py-4">
-            <div className="text-sm font-medium text-slate-900">
-              {ticket.issueTitle || "—"}
-            </div>
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Priority
+              </th>
 
-            <div className="mt-1 max-w-[280px] truncate text-xs text-slate-500">
-              {ticket.issueDescription || "—"}
-            </div>
-          </td>
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Status
+              </th>
 
-          {/* Customer / Company */}
-          <td className="min-w-[200px] px-6 py-4">
-            <div className="text-sm font-medium text-slate-900">
-              {ticket.contactPerson || "—"}
-            </div>
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Assigned To
+              </th>
 
-            <div className="mt-1 text-xs text-slate-500">
-              {ticket.companyName || "—"}
-            </div>
-          </td>
+              <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Created
+              </th>
 
-          {/* Product */}
-          <td className="min-w-[200px] px-6 py-4">
-            <div className="text-sm font-medium text-slate-900">
-              {ticket.productName || "—"}
-            </div>
+              <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Action
+              </th>
+            </tr>
+          </thead>
 
-            <div className="mt-1 text-xs text-slate-500">
-              {ticket.modelNumber || "—"}
-            </div>
+          <tbody className="divide-y divide-gray-100">
+            {tickets.map((ticket) => (
+              <tr
+                key={ticket._id}
+                onClick={() => handleTicketClick(ticket)}
+                className="cursor-pointer transition-colors hover:bg-gray-50"
+              >
+                <td className="px-5 py-4">
+                  <span className="font-mono text-sm font-semibold text-[#0F766E]">
+                    #{ticket._id?.slice(-6).toUpperCase()}
+                  </span>
+                </td>
 
-            {ticket.serialNumber?.length > 0 && (
-              <div className="mt-1 text-xs text-slate-500">
-                SN: {ticket.serialNumber.join(", ")}
+                <td className="max-w-[280px] px-5 py-4">
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {ticket.title || "Untitled ticket"}
+                  </p>
+
+                  <p className="mt-0.5 truncate text-xs text-gray-400">
+                    {ticket.description || "No description"}
+                  </p>
+                </td>
+
+                <td className="px-5 py-4">
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getPriorityClasses(
+                      ticket.priority
+                    )}`}
+                  >
+                    {ticket.priority || "—"}
+                  </span>
+                </td>
+
+                <td className="px-5 py-4">
+                  <StatusBadge status={ticket.status} />
+                </td>
+
+                <td className="px-5 py-4 text-sm text-gray-600">
+                  {getUserName(ticket.assignedTo)}
+                </td>
+
+                <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-500">
+                  {formatDate(ticket.createdAt)}
+                </td>
+
+                <td className="px-5 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleTicketClick(ticket);
+                    }}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-[#E5F4F1] hover:text-[#0F766E]"
+                    aria-label="View ticket"
+                  >
+                    <Eye size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile */}
+      <div className="divide-y divide-gray-100 md:hidden">
+        {tickets.map((ticket) => (
+          <div
+            key={ticket._id}
+            onClick={() => handleTicketClick(ticket)}
+            className="cursor-pointer p-4 transition-colors hover:bg-gray-50"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-mono text-xs font-semibold text-[#0F766E]">
+                  #{ticket._id?.slice(-6).toUpperCase()}
+                </p>
+
+                <h3 className="mt-1 truncate text-sm font-semibold text-gray-900">
+                  {ticket.title || "Untitled ticket"}
+                </h3>
               </div>
-            )}
-          </td>
 
-          {/* Priority */}
-          <td className="whitespace-nowrap px-6 py-4">
-            <StatusBadge
-              text={formatLabel(ticket.priority)}
-              color={getPriorityColor(ticket.priority)}
-            />
-          </td>
+              <StatusBadge status={ticket.status} />
+            </div>
 
-          {/* Department */}
-          <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
-            {formatLabel(ticket.department)}
-          </td>
+            <p className="mt-2 line-clamp-2 text-xs text-gray-500">
+              {ticket.description || "No description"}
+            </p>
 
-          {/* Status */}
-          <td className="whitespace-nowrap px-6 py-4">
-            <StatusBadge
-              text={formatLabel(ticket.ticketStatus)}
-              color={getStatusColor(ticket.ticketStatus)}
-            />
-          </td>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getPriorityClasses(
+                  ticket.priority
+                )}`}
+              >
+                {ticket.priority || "—"}
+              </span>
 
-          {/* Assigned To */}
-          {role !== "client" && (
-          <td className="min-w-[160px] px-6 py-4">
-          {ticket.assignedTo ? (
-  <>
-    <div className="text-sm font-medium text-slate-900">
-      {ticket.assignedTo.fullName || "—"}
+              <span className="text-xs text-gray-400">•</span>
+
+              <span className="text-xs text-gray-500">
+                {getUserName(ticket.assignedTo)}
+              </span>
+
+              <span className="text-xs text-gray-400">•</span>
+
+              <span className="text-xs text-gray-500">
+                {formatDate(ticket.createdAt)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-
-    <div className="mt-1 text-xs text-slate-500">
-      {ticket.assignedTo.role
-        ? formatLabel(ticket.assignedTo.role)
-        : "—"}
-    </div>
-  </>
-) : (
-  <StatusBadge
-    text="Unassigned"
-    color="yellow"
-  />
-)}
-          </td>
-          )}
-
-          {/* Created By */}
-          {role !== "client" && (
-          <td className="min-w-[160px] px-6 py-4">
-            {ticket.createdBy ? (
-              <>
-                <div className="text-sm font-medium text-slate-900">
-                  {ticket.createdBy.fullName || "—"}
-                </div>
-
-                <div className="mt-1 text-xs text-slate-500">
-                  {ticket.createdBy.role
-                    ? formatLabel(ticket.createdBy.role)
-                    : "—"}
-                </div>
-              </>
-            ) : (
-              "—"
-            )}
-          </td>
-          )}
-
-          {/* Created At */}
-          <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
-            {formatDate(ticket.createdAt)}
-          </td>
-
-          {/* Action */}
-          <td className="whitespace-nowrap px-6 py-4">
-            <button
-              type="button"
-              onClick={() => onView(ticket)}
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[#56BD05]"
-              title="View Ticket"
-            >
-              <Eye size={17} />
-              View
-            </button>
-          </td>
-
-        </tr>
-      ))}
-    </DataTable>
   );
-}
+};
+
+export default TicketsTable;

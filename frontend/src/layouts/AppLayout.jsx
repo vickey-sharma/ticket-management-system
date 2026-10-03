@@ -1,83 +1,46 @@
-// import { Outlet } from "react-router-dom";
-// import Sidebar from "../components/app-layout/Sidebar";
-// import Topbar from "../components/app-layout/Topbar";
-// import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
 
-// export default function AppLayout() {
+const AppLayout = ({ children, user }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-//   // const user = JSON.parse(localStorage.getItem("user"));
-//    const { user, loading } = useAuth();
+  const handleOpenSidebar = () => {
+    setSidebarOpen(true);
+  };
 
-//   //  console.log(user);
-
-//  if (loading) return <div>Loading...</div>;
- 
-//   if (!user) return null;
-
-//   return (
-//     <div className="flex bg-gray-100 min-h-screen">
-
-//       <Sidebar role={user.role} />
-
-//       <div className="flex-1 ml-72">
-
-//         <Topbar user={user} />
-
-//         <div className="px-8 pt-8">
-//           <Outlet />
-//         </div>
-
-//       </div>
-
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { Outlet } from "react-router-dom";
-import Sidebar from "../components/app-layout/Sidebar";
-import Topbar from "../components/app-layout/Topbar";
-import { useAuth } from "../hooks/useAuth";
-
-export default function AppLayout() {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div>Loading...</div>;
-  if (!user) return null;
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
+  };
 
   return (
-    <div className="h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#F7F9F9]">
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <Sidebar
+          user={user}
+          isOpen={sidebarOpen}
+          onClose={handleCloseSidebar}
+        />
 
-      <Sidebar role={user.role} />
+        {/* Main area */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Topbar */}
+          <Topbar
+            user={user}
+            onMenuClick={handleOpenSidebar}
+          />
 
-      <div className="ml-72 flex h-screen flex-col">
-
-        {/* Fixed Topbar */}
-        <div className="fixed top-0 left-72 right-0 z-40">
-          <Topbar user={user} />
+          {/* Page content */}
+          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-[1600px]">
+              {children}
+            </div>
+          </main>
         </div>
-
-        {/* Scrollable Content */}
-        <main className="mt-20 flex-1 overflow-auto px-8 py-8">
-          <Outlet />
-        </main>
-
       </div>
-
     </div>
   );
-}
+};
+
+export default AppLayout;

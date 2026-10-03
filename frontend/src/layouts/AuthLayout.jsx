@@ -1,33 +1,59 @@
-import Left from "../components/auth/Left";
 
-export default function AuthLayout({ children }) {
+
+const AuthLayout = ({ children }) => {
   return (
-    <div className="flex min-h-screen">
-      
-      {/* LEFT SIDE */}
-      <div className="hidden md:flex w-1/2">
-        <Left />
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-[#F7F9F9]">
 
-      {/* RIGHT SIDE */}
+      {/* Background glow */}
+      <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-[#DFF3EF] blur-3xl" />
 
-<div className="w-full md:w-1/2 relative flex items-center justify-center h-screen overflow-hidden
-bg-[radial-gradient(circle_at_top,rgba(74,171,39,0.08),transparent_60%),linear-gradient(to_bottom,#ffffff,#f6f8f7)]">
+      <div className="pointer-events-none absolute -bottom-48 -right-40 h-[30rem] w-[30rem] rounded-full bg-[#E5F4F1] blur-3xl" />
 
+      {/* Subtle center glow */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0F766E]/[0.025] blur-3xl" />
 
+      <div className="relative z-10 flex min-h-screen flex-col items-center px-4 py-8 sm:px-6">
 
-<div className="absolute w-[350px] h-[350px] bg-[#4AAB27]/10 blur-[120px] rounded-full top-20 right-10 " />
+        {/* Brand */}
+        <div className="mb-8 flex flex-col items-center">
 
-<div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/noise.png')]" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#073B3A] shadow-sm">
+            <img
+              // src={watchdogLogoTransparent}
+              alt="Watchdog"
+              className="h-9 w-9 object-contain"
+            />
+          </div>
 
-<div className="relative z-10 w-full h-full flex items-center justify-center">
-  <div className="w-full max-w-md bg-white/70 backdrop-blur-xl border border-gray-100 shadow-xl rounded-2xl px-6 py-4">
-    {children}
-  </div>
-</div>
+          <div className="mt-3 text-center">
+            <h2 className="text-base font-bold tracking-tight text-[#073B3A]">
+              Watchdog
+            </h2>
 
+            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0F766E]">
+              Helpdesk
+            </p>
+          </div>
+
+        </div>
+
+        {/* Auth content */}
+        <main className="flex w-full flex-1 items-start justify-center">
+          <div className="w-full max-w-[430px]">
+            {children}
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="mt-8 text-center">
+          <p className="text-xs text-gray-400">
+            Secure support workspace
+          </p>
+        </footer>
 
       </div>
     </div>
   );
-}
+};
+
+export default AuthLayout;

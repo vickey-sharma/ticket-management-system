@@ -1,9 +1,27 @@
-export default function PublicContainer({ children }) {
+const PublicContainer = ({
+  children,
+  className = "",
+  size = "default",
+}) => {
+  const sizeClasses = {
+    default: "max-w-7xl",
+    narrow: "max-w-4xl",
+    form: "max-w-2xl",
+    wide: "max-w-[1600px]",
+  };
+
   return (
-    <main className="flex-1">
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        {children}
-      </div>
-    </main>
+    <div
+      className={`
+        mx-auto w-full
+        px-4 sm:px-6 lg:px-8
+        ${sizeClasses[size] || sizeClasses.default}
+        ${className}
+      `}
+    >
+      {children}
+    </div>
   );
-}
+};
+
+export default PublicContainer;

@@ -1,19 +1,18 @@
-import { Outlet } from "react-router-dom";
+import PublicHeader from "./PublicHeader";
+import PublicFooter from "./PublicFooter";
 
-import PublicHeader from "../components/public-layout/PublicHeader";
-import PublicContainer from "../components/public-layout/PublicContainer";
-import PublicFooter from "../components/public-layout/PublicFooter";
-
-export default function PublicLayout() {
+const PublicLayout = ({ children, user = null }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100">
-      <PublicHeader />
+    <div className="flex min-h-screen flex-col bg-[#F7F9F9]">
+      <PublicHeader user={user} />
 
-      <PublicContainer>
-        <Outlet />
-      </PublicContainer>
+      <main className="flex-1">
+        {children}
+      </main>
 
       <PublicFooter />
     </div>
   );
-}
+};
+
+export default PublicLayout;

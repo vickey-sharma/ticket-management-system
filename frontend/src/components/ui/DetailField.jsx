@@ -1,27 +1,28 @@
-export default function DetailField({
+const DetailField = ({
   label,
   value,
+  icon: Icon,
   className = "",
-}) {
+}) => {
   return (
-    <div>
-      {label && (
-        <label className="mb-1 block text-sm text-light">
-          {label}
-        </label>
-      )}
+    <div className={`rounded-xl border border-gray-100 bg-gray-50/70 p-4 ${className}`}>
+      <div className="flex items-center gap-2">
+        {Icon && (
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-[#0F766E] shadow-sm">
+            <Icon size={15} />
+          </div>
+        )}
 
-      <div
-        className={`
-          flex h-10.5 w-full items-center
-          rounded-lg border border-gray-200
-          bg-slate-50 px-4
-          text-sm text-slate-900
-          ${className}
-        `}
-      >
-        {value || "-"}
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          {label}
+        </p>
       </div>
+
+      <p className="mt-2 break-words text-sm font-medium leading-6 text-gray-900">
+        {value ?? "—"}
+      </p>
     </div>
   );
-}
+};
+
+export default DetailField;

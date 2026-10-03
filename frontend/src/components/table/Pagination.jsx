@@ -1,109 +1,153 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function Pagination({
-  currentPage,
-  totalPages,
+const Pagination = ({
+  currentPage = 1,
+  totalPages = 1,
   onPageChange,
-}) {
-  if (totalPages <= 1) return null;
+  className = "",
+}) => {
+  if (totalPages <= 1) {
+    return null;
+  }
 
-const getPages = () => {
-  const pages = [];
+  const getPageNumbers = () => {
+    const pages = [];
 
-  // 7 or fewer pages → show everything
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
+    if (totalPages <= 5) {
+      for (let page = 1; page <= totalPages; page += 1) {
+        pages.push(page);
+      }
+
+      return pages;
     }
 
-    return pages;
-  }
+    pages.push(1);
 
-  // Always show first page
-  pages.push(1);
+    if (currentPage > 3) {
+      pages.push("...");
+    }
 
-  // Beginning
-  if (currentPage <= 4) {
-    pages.push(2, 3, 4, 5);
-    pages.push("...");
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let page = start; page <= end; page += 1) {
+      pages.push(page);
+    }
+
+    if (currentPage < totalPages - 2) {
+      pages.push("...");
+    }
+
     pages.push(totalPages);
 
     return pages;
-  }
+  };
 
-  // End
-  if (currentPage >= totalPages - 3) {
-    pages.push("...");
-    pages.push(
-      totalPages - 4,
-      totalPages - 3,
-      totalPages - 2,
-      totalPages - 1
-    );
-    pages.push(totalPages);
+  const pages = getPageNumbers();
 
-    return pages;
-  }
+  const handlePageChange = (page) => {
+    if (
+      page === "..." ||
+      page < 1 ||
+      page > totalPages ||
+      page === currentPage
+    ) {
+      return;
+    }
 
-  // Middle
-  pages.push("...");
-  pages.push(currentPage - 1);
-  pages.push(currentPage);
-  pages.push(currentPage + 1);
-  pages.push("...");
-  pages.push(totalPages);
-
-  return pages;
-};
+    onPageChange?.(page);
+  };
 
   return (
-    <div className="flex items-center justify-between mt-6">
-
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-slate-100"
-      >
-        <ChevronLeft size={18} />
-        Previous
-      </button>
-
-      <div className="flex items-center gap-2">
-
-       {getPages().map((page, index) =>
-  page === "..." ? (
-    <span
-      key={`ellipsis-${index}`}
-      className="px-2 text-slate-500"
+    <div
+      className={`
+        flex flex-wrap items-center justify-between gap-3
+        rounded-2xl border border-gray-200
+        bg-white px-4 py-3
+        shadow-sm
+        ${className}
+      `}
     >
-      ...
-    </span>
-  ) : (
-    <button
-      key={`page-${page}-${index}`}
-      onClick={() => onPageChange(page)}
-      className={`h-10 w-10 rounded-lg text-sm transition ${
-        currentPage === page
-          ? "bg-[#56BD05] text-white"
-          : "border border-slate-200 hover:bg-slate-100"
-      }`}
-    >
-      {page}
-    </button>
-  )
-)}
+      <p className="text-sm text-gray-500">
+        Page{" "}
+        <span className="font-semibold text-gray-900">
+          {currentPage}
+        </span>{" "}
+        of{" "}
+        <span className="font-semibold text-gray-900">
+          {totalPages}
+        </span>
+      </p>
 
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="
+            flex h-9 w-9 items-center justify-center
+            rounded-lg border border-gray-200
+            bg-white text-gray-500
+            transition
+            hover:bg-gray-50 hover:text-gray-900
+            disabled:cursor-not-allowed
+            disabled:opacity-40
+          "
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={17} />
+        </button>
+
+        {pages.map((page, index) =>
+          page === "..." ? (
+            <span
+              key={`ellipsis-${index}`}
+              className="flex h-9 w-9 items-center justify-center text-sm text-gray-400"
+            >
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              type="button"
+              onClick={() => handlePageChange(page)}
+              className={`
+                flex h-9 w-9 items-center justify-center
+                rounded-lg text-sm font-medium
+                transition
+                ${
+                  currentPage === page
+                    ? "bg-[#0F766E] text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }
+              `}
+              aria-current={currentPage === page ? "page" : undefined}
+            >
+              {page}
+            </button>
+          )
+        )}
+
+        <button
+          type="button"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="
+            flex h-9 w-9 items-center justify-center
+            rounded-lg border border-gray-200
+            bg-white text-gray-500
+            transition
+            hover:bg-gray-50 hover:text-gray-900
+            disabled:cursor-not-allowed
+            disabled:opacity-40
+          "
+          aria-label="Next page"
+        >
+          <ChevronRight size={17} />
+        </button>
       </div>
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-slate-100"
-      >
-        Next
-        <ChevronRight size={18} />
-      </button>
-
     </div>
   );
-}
+};
+
+export default Pagination;

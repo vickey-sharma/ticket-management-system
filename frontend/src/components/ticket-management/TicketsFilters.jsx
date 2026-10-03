@@ -1,294 +1,151 @@
-import React from "react";
-import SearchBar from "../ui/SearchBar";
-import InputField from "../ui/InputField";
-import FilterDropdown from "../ui/FilterDropdown";
-import SecondaryButton from "../ui/SecondaryButton";
+import { Filter, RotateCcw, Search, X } from "lucide-react";
+import { useState } from "react";
 
-const statusOptions = [
-  { value: "", label: "All Statuses" },
-  { value: "open", label: "Open" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "resolved", label: "Resolved" },
-  { value: "closed", label: "Closed" },
-];
-
-const priorityOptions = [
-  { value: "", label: "All Priorities" },
-  { value: "high", label: "High" },
-  { value: "medium", label: "Medium" },
-  { value: "low", label: "Low" },
-];
-
-const departmentOptions = [
-  { value: "", label: "All Departments" },
-  { value: "rma", label: "RMA" },
-  { value: "technical_support", label: "Technical Support" },
-  { value: "general_query", label: "General Query" },
-];
-
-const createdByRoleOptions = [
-  { value: "", label: "All Created By Roles" },
-  { value: "superadmin", label: "Super Admin" },
-  { value: "admin", label: "Admin" },
-  { value: "engineer", label: "Engineer" },
-  { value: "l1_engineer", label: "L1 Engineer" },
-  { value: "client", label: "Client" },
-];
-
-const dateFilterOptions = [
-  { value: "all", label: "All Dates" },
-  { value: "daily", label: "Today" },
-  { value: "weekly", label: "This Week" },
-  { value: "monthly", label: "This Month" },
-  { value: "yearly", label: "This Year" },
-  { value: "custom", label: "Custom Range" },
-];
-
-export default function TicketsFilters({
-  filters,
+const TicketsFilters = ({
+  filters = {},
   onFilterChange,
   onReset,
-  createdByOptions = [],
-  assignedToOptions = [],
-  role
-}) {
-  const handleChange = (field, value) => {
-    onFilterChange(field, value);
+}) => {
+  const [search, setSearch] = useState(filters.search || "");
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    onFilterChange?.("search", value);
   };
 
+  const handleChange = (key, value) => {
+    onFilterChange?.(key, value);
+  };
+
+  const hasActiveFilters =
+    filters.search ||
+    filters.status ||
+    filters.priority ||
+    filters.assignedTo;
+
   return (
-    <div className="space-y-5">
-
-      {/* Global Search */}
-      <div>
-        <SearchBar
-          value={filters.search}
-          onChange={(e) => handleChange("search", e.target.value)}
-          placeholder="Search ticket no., issue title or serial number..."
-        />
-      </div>
-
-      {/* Text Filters */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-
-      {role !== "client" && (
-  <InputField
-    label="Company Name"
-    value={filters.companyName}
-    onChange={(e) =>
-      handleChange("companyName", e.target.value)
-    }
-    placeholder="Enter company name"
-  />
-)}
-
-        <InputField
-          label="Product Name"
-          value={filters.productName}
-          onChange={(e) =>
-            handleChange("productName", e.target.value)
-          }
-          placeholder="Enter product name"
-        />
-
-        <InputField
-          label="Model Number"
-          value={filters.modelNumber}
-          onChange={(e) =>
-            handleChange("modelNumber", e.target.value)
-          }
-          placeholder="Enter model number"
-        />
-
-        <InputField
-          label="Serial Number"
-          value={filters.serialNumber}
-          onChange={(e) =>
-            handleChange("serialNumber", e.target.value)
-          }
-          placeholder="Enter serial number"
-        />
-
-        <InputField
-          label="Bill Number"
-          value={filters.billNumber}
-          onChange={(e) =>
-            handleChange("billNumber", e.target.value)
-          }
-          placeholder="Enter bill number"
-        />
-
-      </div>
-
-      {/* Dropdown Filters */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Ticket Status
-          </label>
-
-          <FilterDropdown
-            value={filters.ticketStatus}
-            onChange={(value) =>
-              handleChange("ticketStatus", value)
-            }
-            options={statusOptions}
-            className="w-full"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Priority
-          </label>
-
-          <FilterDropdown
-            value={filters.priority}
-            onChange={(value) =>
-              handleChange("priority", value)
-            }
-            options={priorityOptions}
-            className="w-full"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Department
-          </label>
-
-          <FilterDropdown
-            value={filters.department}
-            onChange={(value) =>
-              handleChange("department", value)
-            }
-            options={departmentOptions}
-            className="w-full"
-          />
-        </div>
-
-        {/* Date Filter */}
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Date Filter
-          </label>
-
-          <FilterDropdown
-            value={filters.dateFilter || "all"}
-            onChange={(value) =>
-              handleChange("dateFilter", value)
-            }
-            options={dateFilterOptions}
-            className="w-full"
-          />
-        </div>
-
-
-
-      </div>
-
-      {/* User Filters */}
-      {role !== "client" && (
-
-        
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-
-<div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Created By Role
-          </label>
-
-          <FilterDropdown
-            value={filters.createdByRole}
-            onChange={(value) =>
-              handleChange("createdByRole", value)
-            }
-            options={createdByRoleOptions}
-            className="w-full"
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+        {/* Search */}
+        <div className="relative min-w-0 flex-1">
+          <Search
+            size={18}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
           />
 
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search tickets..."
+            className="
+              h-11 w-full rounded-xl border border-gray-200
+              bg-gray-50 pl-10 pr-10 text-sm text-gray-900
+              outline-none transition
+              placeholder:text-gray-400
+              focus:border-[#0F766E]
+              focus:bg-white
+              focus:ring-2
+              focus:ring-[#0F766E]/10
+            "
+          />
+
+          {search && (
+            <button
+              type="button"
+              onClick={() => handleSearchChange("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-gray-700"
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              Created By
-            </label>
-
-            <FilterDropdown
-              value={filters.createdBy}
-              onChange={(value) =>
-                handleChange("createdBy", value)
-              }
-              options={[
-                { value: "", label: "All Creators" },
-                ...createdByOptions,
-              ]}
-              className="w-full"
-            />
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-medium text-gray-600">
+            <Filter size={16} />
+            <span className="hidden sm:inline">Filters</span>
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700">
-              Assigned To
-            </label>
+          {/* Status */}
+          <select
+            value={filters.status || ""}
+            onChange={(e) => handleChange("status", e.target.value)}
+            className="
+              h-11 rounded-xl border border-gray-200 bg-white
+              px-3 text-sm text-gray-700 outline-none transition
+              focus:border-[#0F766E]
+              focus:ring-2 focus:ring-[#0F766E]/10
+            "
+          >
+            <option value="">All Status</option>
+            <option value="OPEN">Open</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CLOSED">Closed</option>
+          </select>
 
-            <FilterDropdown
-              value={filters.assignedTo}
-              onChange={(value) =>
-                handleChange("assignedTo", value)
-              }
-              options={[
-                { value: "", label: "All Assignees" },
-                ...assignedToOptions,
-              ]}
-              className="w-full"
-            />
-          </div>
+          {/* Priority */}
+          <select
+            value={filters.priority || ""}
+            onChange={(e) => handleChange("priority", e.target.value)}
+            className="
+              h-11 rounded-xl border border-gray-200 bg-white
+              px-3 text-sm text-gray-700 outline-none transition
+              focus:border-[#0F766E]
+              focus:ring-2 focus:ring-[#0F766E]/10
+            "
+          >
+            <option value="">All Priority</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
 
+          {/* Assigned */}
+          <select
+            value={filters.assignedTo || ""}
+            onChange={(e) => handleChange("assignedTo", e.target.value)}
+            className="
+              h-11 rounded-xl border border-gray-200 bg-white
+              px-3 text-sm text-gray-700 outline-none transition
+              focus:border-[#0F766E]
+              focus:ring-2 focus:ring-[#0F766E]/10
+            "
+          >
+            <option value="">All Assignees</option>
+
+            {filters.assignees?.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.fullName}
+              </option>
+            ))}
+          </select>
+
+          {/* Reset */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                onReset?.();
+              }}
+              className="
+                flex h-11 items-center gap-2 rounded-xl
+                px-3 text-sm font-medium text-gray-500
+                transition hover:bg-gray-100 hover:text-gray-900
+              "
+            >
+              <RotateCcw size={16} />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          )}
         </div>
-      )}
-
-      {/* Custom Date Range */}
-      {filters.dateFilter === "custom" && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
-          <InputField
-            label="Start Date"
-            type="date"
-            value={filters.startDate}
-            onChange={(e) =>
-              handleChange("startDate", e.target.value)
-            }
-          />
-
-          <InputField
-            label="End Date"
-            type="date"
-            value={filters.endDate}
-            onChange={(e) =>
-              handleChange("endDate", e.target.value)
-            }
-          />
-
-        </div>
-      )}
-
-      {filters.dateFilter === "custom" && (
-        <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-          Select a custom date range. Maximum range allowed is 365 days.
-        </div>
-      )}
-
-      {/* Reset */}
-      <div className="flex justify-end">
-        <SecondaryButton
-          text="Clear Filters"
-          onClick={onReset}
-          className="w-auto px-5"
-        />
       </div>
-
     </div>
   );
-}
+};
+
+export default TicketsFilters;

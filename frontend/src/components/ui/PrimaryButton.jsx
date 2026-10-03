@@ -1,16 +1,44 @@
-export default function PrimaryButton({ text, loading, onClick, type="button", className=""}) {
+id="e2v4ab"
+import { Loader2 } from "lucide-react";
+
+const PrimaryButton = ({
+  children,
+  type = "button",
+  onClick,
+  loading = false,
+  disabled = false,
+  fullWidth = false,
+  className = "",
+  ...props
+}) => {
   return (
     <button
-    type={type}
+      type={type}
       onClick={onClick}
-      disabled={loading}
-      className={`w-full bg-[#56BD05] text-white py-2 px-5 rounded-lg mt-0 disabled:opacity-50 transition-all duration-300 hover:brightness-[1.08] hover:-translate-y-[2px] ${className}`}
+      disabled={disabled || loading}
+      className={`
+        inline-flex h-11 items-center justify-center gap-2
+        rounded-xl bg-[#0F766E] px-5
+        text-sm font-semibold text-white
+        shadow-sm transition-all duration-200
+        hover:bg-[#0B625C]
+        hover:shadow-md
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#0F766E]/20
+        active:scale-[0.98]
+        disabled:cursor-not-allowed
+        disabled:opacity-60
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
+      {...props}
     >
-      {loading ? "Loading..." : text}
+      {loading && <Loader2 size={17} className="animate-spin" />}
+
+      {children}
     </button>
   );
-}
+};
 
-
-
-// bg-green-600
+export default PrimaryButton;

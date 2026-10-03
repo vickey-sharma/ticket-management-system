@@ -8,14 +8,19 @@ import jwt from "jsonwebtoken";
 
 const registerCustomerController = asyncHandler(async (req, res)=> {
 
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, confirmPassword } = req.body;
 
   const filteredFullName = fullName?.trim();
   const filteredEmail = email?.trim().toLowerCase();
   const filteredPassword = password?.trim();
+  const filteredConfirmPassword = confirmPassword?.trim();
 
-  if(!filteredFullName || !filteredEmail || !filteredPassword){
+  if(!filteredFullName || !filteredEmail || !filteredPassword || !filteredConfirmPassword){
     throw new ApiError(400, "All fields are required")
+  }
+
+   if(filteredPassword !== filteredConfirmPassword){
+    throw new ApiError(400, "Please Enter the same password")
   }
 
   const existingUser = await User.findOne({
@@ -63,17 +68,22 @@ if(currentUserRole !== "admin"){
 };
 
 
-  const { fullName, email, role, password  } = req.body;
+  const { fullName, email, role, password, confirmPassword  } = req.body;
 
     const filteredFullName = fullName?.trim();
   const filteredEmail = email?.trim().toLowerCase();
   const filteredPassword = password?.trim();
+  const filteredConfirmPassword = confirmPassword?.trim();
   const filteredRole = role?.trim().toLowerCase();
 
 
-  if(!filteredFullName || !filteredEmail || !filteredPassword || !filteredRole){
+  if(!filteredFullName || !filteredEmail || !filteredPassword || !filteredRole || !filteredConfirmPassword){
      throw new ApiError(400, "All fields are required")
   };
+
+  if(filteredPassword !== filteredConfirmPassword){
+    throw new ApiError(400, "Please Enter the same password")
+  }
   
    const validRoles = [ "admin", "agent"];
   if(!validRoles.includes(filteredRole)){
@@ -495,6 +505,7 @@ updateProfileController,
 
 getAllUsers,
 getUsersBySearch,
+
 }
 
 

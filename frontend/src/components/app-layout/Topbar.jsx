@@ -1,75 +1,93 @@
-import { Bell, Search, Settings, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Bell, Menu, Search } from "lucide-react";
 
-export default function Topbar({ user, role, title = "Dashboard" }) {
-
-  const navigate = useNavigate();
-
-  const searchPlaceholder =
-    role === "client"
-      ? "Search warranty, tickets..."
-      : "Search users, tickets, orders...";
+const Topbar = ({ user, onMenuClick }) => {
+  const firstName = user?.fullName?.split(" ")[0] || "User";
 
   return (
-    <header className="w-full bg-white/90 backdrop-blur-sm px-6 py-4 flex items-center justify-between">
-      
-      {/* LEFT */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900">
-          {title}
-        </h2>
-      </div>
-
-      {/* CENTER */}
-      <div className="hidden md:flex items-center bg-white rounded-xl px-3 py-2 w-72 border border-gray-100 shadow-inner">
-        <Search size={15} className="text-gray-400" />
-        <input
-          type="text"
-          placeholder={searchPlaceholder}
-          className="bg-transparent outline-none text-sm ml-2 w-full text-gray-700 placeholder:text-gray-400"
-        />
-      </div>
-
-      {/* RIGHT */}
-      <div className="flex items-center gap-4">
-
-      
-{/* Quick Add */}
-<button
-  onClick={() => navigate("/admin/dashboard/ticket/create")}
-  className="px-5 py-2 rounded-lg bg-gradient-to-b from-green-50 to-green-100 border border-green-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-900 whitespace-nowrap"
->
-  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#56BD05] shadow-sm pr-0.2">
-    <Plus size={13} strokeWidth={3} className="text-white" />
-  </span>
-
-  Create Ticket
-</button>
-
-
-
-        {/* Notifications */}
-        <button className="relative p-2 rounded-lg bg-white border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-          <Bell size={16} className="text-gray-600" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.7)]"></span>
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
+      {/* Left */}
+      <div className="flex items-center gap-3">
+        {/* Mobile menu */}
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="rounded-xl p-2 text-gray-600 transition hover:bg-gray-100 lg:hidden"
+          aria-label="Open sidebar"
+        >
+          <Menu size={22} />
         </button>
 
-        {/* Settings */}
-        <button className="p-2 rounded-lg bg-white border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-        onClick={()=> navigate("/admin/dashboard/profile-details")}>
-          <Settings size={16} className="text-gray-600" />
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Welcome back, {firstName}
+          </h2>
+
+          <p className="hidden text-sm text-gray-500 sm:block">
+            Here's what's happening with your support tickets.
+          </p>
+        </div>
+      </div>
+
+      {/* Right */}
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Search */}
+        <div className="relative hidden md:block">
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+
+          <input
+            type="text"
+            placeholder="Search tickets..."
+            className="
+              h-10 w-56 rounded-xl border border-gray-200
+              bg-gray-50 pl-10 pr-4 text-sm text-gray-900
+              outline-none transition
+              placeholder:text-gray-400
+              focus:border-[#0F766E]
+              focus:bg-white
+              focus:ring-2
+              focus:ring-[#0F766E]/10
+              lg:w-64
+            "
+          />
+        </div>
+
+        {/* Notification */}
+        <button
+          type="button"
+          className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
+          aria-label="Notifications"
+        >
+          <Bell size={20} />
+
+          {/* Notification indicator */}
+          <span className="absolute right-2.5 top-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
         </button>
 
-        {/* User Info */}
-        <div className="px-8 py-1.5 rounded-lg bg-white border border-gray-100 shadow-sm">
-          <p className="text-sm font-medium text-gray-900 leading-tight">
-            {user.fullName}
-          </p>
-          <p className="text-[11px] text-gray-500 capitalize leading-tight">
-            {user.role}
-          </p>
+        {/* Divider */}
+        <div className="hidden h-8 w-px bg-gray-200 sm:block" />
+
+        {/* Profile */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#DFF5F1] text-sm font-bold text-[#0F766E]">
+            {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
+          </div>
+
+          <div className="hidden min-w-0 sm:block">
+            <p className="max-w-32 truncate text-sm font-semibold text-gray-900">
+              {user?.fullName || "User"}
+            </p>
+
+            <p className="text-xs capitalize text-gray-500">
+              {user?.role || "User"}
+            </p>
+          </div>
         </div>
       </div>
     </header>
   );
-}
+};
+
+export default Topbar;
