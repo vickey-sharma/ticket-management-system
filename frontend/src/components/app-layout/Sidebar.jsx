@@ -146,7 +146,6 @@
 
 
 
-
 import {
   X,
   LogOut,
@@ -204,7 +203,7 @@ export default function Sidebar({
       <aside
         className={`
           fixed inset-y-0 left-0 z-50
-          flex h-screen w-64 shrink-0 flex-col overflow-y-auto
+          flex h-screen w-64 shrink-0 flex-col
           border-r border-gray-200 bg-white
           transition-transform duration-200
           lg:translate-x-0
@@ -232,7 +231,7 @@ export default function Sidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="px-3 py-5">
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
           <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">
             Workspace
           </p>
