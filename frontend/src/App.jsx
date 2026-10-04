@@ -14,6 +14,17 @@ import ProfilePage from "./pages/common-pages/ProfilePage";
 
 import AppLayout from "./layouts/AppLayout";
 
+import AdminCreateTicketPage from "./pages/ticket-management/admin/AdminCreateTicketPage";
+import AdminTicketsPage from "./pages/ticket-management/admin/AdminTicketPage";
+// import AdminTicketDetailsPage from "./pages/ticket-management/admin/AdminTicketDetailsPage";
+
+import AgentTicketsPage from "./pages/ticket-management/agent/AgentTicketPage";
+// import AgentTicketDetailsPage from "./pages/ticket-management/agent/AgentTicketDetailsPage";
+
+import CustomerCreateTicketPage from "./pages/ticket-management/customer/CustomerCreateTicketPage";
+import CustomerTicketsPage from "./pages/ticket-management/customer/CustomerTicketPage";
+// import CustomerTicketDetailsPage from "./pages/ticket-management/customer/CustomerTicketDetailsPage";
+
 function App() {
   return (
     <>
@@ -43,20 +54,66 @@ function App() {
             element={<Dashboard />}
           />
 
-          <Route
-            path="/dashboard/users"
-            element={<UsersPage />}
-          /> 
-
-          <Route
-  path="/dashboard/profile"
-  element={<ProfilePage />}
+          {/* Admin ticket routes */}
+       <Route
+  path="/dashboard/tickets/admin"
+  element={<AdminTicketsPage />}
 />
 
 <Route
-  path="/dashboard/change-password"
-  element={<ChangePasswordPage />}
+  path="/dashboard/tickets/admin/create"
+  element={<AdminCreateTicketPage />}
 />
+
+          {/* <Route
+            path="/dashboard/admin/tickets/:ticketId"
+            element={<AdminTicketDetailsPage />}
+          /> */}
+
+          {/* Agent ticket routes */}
+        <Route
+  path="/dashboard/tickets/agent"
+  element={<AgentTicketsPage />}
+/>
+
+          {/* <Route
+            path="/dashboard/agent/tickets/:ticketId"
+            element={<AgentTicketDetailsPage />}
+          /> */}
+
+          {/* Customer ticket routes */}
+        <Route
+  path="/dashboard/tickets/customer"
+  element={<CustomerTicketsPage />}
+/>
+
+<Route
+  path="/dashboard/tickets/customer/create"
+  element={<CustomerCreateTicketPage />}
+/>
+
+{/* 
+          <Route
+            path="/dashboard/customer/tickets/:ticketId"
+            element={<CustomerTicketDetailsPage />}
+          /> */}
+
+          {/* User management */}
+          <Route
+            path="/dashboard/users"
+            element={<UsersPage />}
+          />
+
+          {/* Common pages */}
+          <Route
+            path="/dashboard/profile"
+            element={<ProfilePage />}
+          />
+
+          <Route
+            path="/dashboard/change-password"
+            element={<ChangePasswordPage />}
+          />
         </Route>
 
         {/* Fallback */}

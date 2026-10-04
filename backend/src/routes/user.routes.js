@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerCustomerController, registerUserByAdminController, generateAccessAndRefreshToken, refreshAccessToken, loginUserController, logoutUserController, changeCurrentPassword, getCurrentUser, updateProfileController, getAllUsers, getUsersBySearch, } from "../controllers/user.controller.js";
+import { registerCustomerController, registerUserByAdminController, generateAccessAndRefreshToken, refreshAccessToken, loginUserController, logoutUserController, changeCurrentPassword, getCurrentUser, updateProfileController, getAllAgentUsers, getUsersBySearch, } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
 
@@ -68,11 +68,11 @@ router.patch(
 
 
 // Get all users - Admin
-router.get(
-    "/",
-    verifyJWT,
-    getAllUsers
-);
+// router.get(
+//     "/",
+//     verifyJWT,
+//     getAllUsers
+// );
 
 
 // Search users - Admin
@@ -82,5 +82,11 @@ router.get(
     getUsersBySearch
 );
 
+// Get agents for assignment dropdown - Admin
+router.get(
+  "/agents",
+  verifyJWT,
+  getAllAgentUsers
+);
 
 export default router;

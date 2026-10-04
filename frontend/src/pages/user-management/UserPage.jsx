@@ -1,11 +1,9 @@
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, Search, Users } from "lucide-react";
 import FilterDropdown from "../../components/ui/FilterDropdown";
 
 import {
-  getAllUsers,
   getUsersBySearch,
 } from "../../services/authService";
 
@@ -24,23 +22,20 @@ export default function UsersPage() {
     try {
       setLoading(true);
 
-      let response;
+      const params = {
+        page: 1,
+        limit: 20,
+      };
 
-      if (search.trim() || role) {
-        const params = {};
-
-        if (role) {
-          params.role = role;
-        }
-
-        if (search.trim()) {
-          params.search = search.trim();
-        }
-
-        response = await getUsersBySearch(params);
-      } else {
-        response = await getAllUsers();
+      if (role) {
+        params.role = role;
       }
+
+      if (search.trim()) {
+        params.search = search.trim();
+      }
+
+      const response = await getUsersBySearch(params);
 
       setUsers(response.data?.data?.users || []);
     } catch (error) {
@@ -164,17 +159,17 @@ export default function UsersPage() {
             </div>
 
             {/* Role filter */}
-         <FilterDropdown
-  value={role}
-  onChange={setRole}
-  placeholder="All Roles"
-  options={[
-    { value: "admin", label: "Admin" },
-    { value: "agent", label: "Agent" },
-    { value: "customer", label: "Customer" },
-  ]}
-  className="sm:w-44"
-/>
+            <FilterDropdown
+              value={role}
+              onChange={setRole}
+              placeholder="All Roles"
+              options={[
+                { value: "admin", label: "Admin" },
+                { value: "agent", label: "Agent" },
+                { value: "customer", label: "Customer" },
+              ]}
+              className="sm:w-44"
+            />
           </div>
         </section>
 

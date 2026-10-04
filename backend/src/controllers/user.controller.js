@@ -397,31 +397,31 @@ const getCurrentUser = asyncHandler(async(req, res)=> {
 
 });
 
-const getAllUsers = asyncHandler(async(req, res)=> {
+// const getAllUsers = asyncHandler(async(req, res)=> {
 
   
-  const currentUser = req.user;
-  if(!currentUser){
-     throw new ApiError(401, "Invalid or Missing User")
-  };
+//   const currentUser = req.user;
+//   if(!currentUser){
+//      throw new ApiError(401, "Invalid or Missing User")
+//   };
 
-const currentUserRole = currentUser.role?.trim().toLowerCase();
-if(!currentUserRole){
-  throw new ApiError(400, "Error while fetching user role")
-};
+// const currentUserRole = currentUser.role?.trim().toLowerCase();
+// if(!currentUserRole){
+//   throw new ApiError(400, "Error while fetching user role")
+// };
 
-if(currentUserRole !== "admin"){
-  throw new ApiError(403, "Unauthorized access")
-};
+// if(currentUserRole !== "admin"){
+//   throw new ApiError(403, "Unauthorized access")
+// };
 
-const allUsers = await User.find({isDeleted: false,}).select("-password -refreshToken");
+// const allUsers = await User.find({isDeleted: false,}).select("-password -refreshToken");
 
-  return res
-   .status(200)
-   .json(new ApiResponse(200,  { users: allUsers },  "All users fetched successfully"))
+//   return res
+//    .status(200)
+//    .json(new ApiResponse(200,  { users: allUsers },  "All users fetched successfully"))
 
 
-});
+// });
 
 
 const getUsersBySearch = asyncHandler(async(req, res)=> {
@@ -431,7 +431,7 @@ const getUsersBySearch = asyncHandler(async(req, res)=> {
      throw new ApiError(401, "Unauthorized");
   };
 
-  const currentUserRole = currentUser.role?.trim()?.toLowerCase();
+  const currentUserRole = currentUser.role?.trim().toLowerCase();
   if(!currentUserRole){
 throw new ApiError(401, "Unauthorized role");
   };
@@ -439,6 +439,11 @@ throw new ApiError(401, "Unauthorized role");
   if(currentUserRole !== "admin"){
   throw new ApiError(403, "Unauthorized access")
 };
+
+const page = Math.max(Number(req.query.page) || 1, 1);
+const limit = Math.min(Number(req.query.limit) || 20, 50);
+const skip = (page - 1) * limit;
+
 const search = req.query.search?.trim();
 const role = req.query.role?.trim().toLowerCase();
 
@@ -485,19 +490,104 @@ if (role) {
   filter.role = role;
 }
 
-     const allUsers = await User.find(filter)
-        .select("_id fullName email role")
-        .sort({ fullName: 1 })
-        .limit(20);
+ const [allUsers, total] = await Promise.all([
+  User.find(filter)
+    .select("_id fullName email role")
+    .sort({ fullName: 1 })
+    .skip(skip)
+    .limit(limit),
 
-         return res.status(200).json(
-        new ApiResponse(
-            200,
-            { users: allUsers },
-            "Users fetched successfully"
-        )
-    );
+  User.countDocuments(filter),
+]);
+
+    return res.status(200).json(
+  new ApiResponse(
+    200,
+    {
+      users: allUsers,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    },
+    "Users fetched successfully"
+  )
+);
     
+});
+
+const getAllAgentUsers = asyncHandler(async (req, res) => {
+  const currentUser = req.user;
+
+  if (!currentUser) {
+    throw new ApiError(401, "Invalid or Missing User");
+  }
+
+  const currentUserRole = currentUser.role?.trim().toLowerCase();
+
+  if (!currentUserRole) {
+    throw new ApiError(400, "Error while fetching user role");
+  }
+
+  if (currentUserRole !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const limit = Math.min(Number(req.query.limit) || 10, 50);
+  const skip = (page - 1) * limit;
+
+  const search = req.query.search?.trim();
+
+  const filter = {
+    role: "agent",
+    isDeleted: false,
+  };
+
+  if (search) {
+    filter.$or = [
+      {
+        fullName: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        email: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ];
+  }
+
+  const [agents, total] = await Promise.all([
+    User.find(filter)
+      .select("_id fullName email")
+      .sort({ fullName: 1 })
+      .skip(skip)
+      .limit(limit),
+
+    User.countDocuments(filter),
+  ]);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        users: agents,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Agents fetched successfully"
+    )
+  );
 });
 
 
@@ -518,8 +608,9 @@ changeCurrentPassword,
 getCurrentUser,
 updateProfileController,
 
-getAllUsers,
+// getAllUsers,
 getUsersBySearch,
+getAllAgentUsers,
 
 }
 

@@ -1,43 +1,37 @@
-import api from "./api";
+import api from "./api.js";
 
-export const createTicketByAdmin = (data) => {
-    return api.post("/tickets/admin/create-ticket", data);
+export const createTicket = (ticketData) => {
+  return api.post("/tickets", ticketData);
 };
 
-export const createTicketByClient = (data) => {
-    return api.post("/tickets/client/create-ticket", data);
+export const getAdminTickets = (params = {}) => {
+  return api.get("/tickets/admin", {
+    params,
+  });
 };
 
-export const getAllClientForTicket = (data)=> {
-    return api.get("/tickets/clients", data)
+export const getCustomerTickets = (params = {}) => {
+  return api.get("/tickets/customer", {
+    params,
+  });
 };
 
-export const getRegisteredProductsByCompanyName = (companyName, data)=> {
-return api.get(`/tickets/companies/${companyName}/registered-products`, data)
+export const getAgentTickets = (params = {}) => {
+  return api.get("/tickets/agent", {
+    params,
+  });
 };
 
-export const getClientsByCompanyName = (companyName, data)=>{
-    return api.get(`/tickets/companies/${companyName}/clients`, data)
+export const assignTicket = (ticketId, assignedToId) => {
+  return api.patch(`/tickets/${ticketId}/assign`, {
+    assignedToId,
+  });
 };
 
-export const getAssignableUsersForTicket = ()=>{
-    return api.get(`/tickets/assignable-users`)
+export const updateTicket = (ticketId, ticketData) => {
+  return api.patch(`/tickets/${ticketId}`, ticketData);
 };
 
-export const getAllCompaniesFromRegisteredProducts = (data)=> {
-    return api.get("/tickets/companies")
-};
-
-export const getClientById = (clientId, data)=> {
-    return api.get(`/tickets/clients/${clientId}`, data)
-};
-
-export const getAllTicketsByAdmin = (data = {}) => {
-    return api.get("/tickets/admin/all-tickets", {
-        params: data,
-    });
-};
-
-export const getAllTicketsByClient = (data) => {
-    return api.get("/tickets/client/all-tickets", data);
+export const deleteTicket = (ticketId) => {
+  return api.delete(`/tickets/${ticketId}`);
 };

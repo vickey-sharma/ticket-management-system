@@ -1,12 +1,23 @@
+
 import { Filter, RotateCcw, Search, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import FilterDropdown from "../ui/FilterDropdown";
+import SearchableDropdown from "../ui/SearchableDropdown";
+
+import { getAllAgentUsers } from "../../services/authService";
 
 const TicketsFilters = ({
   filters = {},
   onFilterChange,
   onReset,
+  showAssigneeFilter = true,
+  assignees = [],
 }) => {
   const [search, setSearch] = useState(filters.search || "");
+
+  const [agentSearch, setAgentSearch] = useState("");
+  const [agentOptions, setAgentOptions] = useState(assignees);
 
   const handleSearchChange = (value) => {
     setSearch(value);
@@ -23,10 +34,37 @@ const TicketsFilters = ({
     filters.priority ||
     filters.assignedTo;
 
+  useEffect(() => {
+    if (!showAssigneeFilter) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await getAllAgentUsers({
+          page: 1,
+          limit: 10,
+          search: agentSearch.trim(),
+        });
+
+        const users =
+          response.data?.data?.users || [];
+
+        setAgentOptions(
+          users.map((user) => ({
+            value: user._id,
+            label: user.fullName || user.email,
+          }))
+        );
+      } catch (error) {
+        setAgentOptions([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [agentSearch, showAssigneeFilter]);
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        {/* Search */}
         <div className="relative min-w-0 flex-1">
           <Search
             size={18}
@@ -36,11 +74,16 @@ const TicketsFilters = ({
           <input
             type="text"
             value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(event) =>
+              handleSearchChange(event.target.value)
+            }
             placeholder="Search tickets..."
             className="
-              h-11 w-full rounded-xl border border-gray-200
-              bg-gray-50 pl-10 pr-10 text-sm text-gray-900
+              h-11 w-full rounded-xl
+              border border-gray-200
+              bg-gray-50
+              pl-10 pr-10
+              text-sm text-gray-900
               outline-none transition
               placeholder:text-gray-400
               focus:border-[#0F766E]
@@ -62,69 +105,67 @@ const TicketsFilters = ({
           )}
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-medium text-gray-600">
             <Filter size={16} />
-            <span className="hidden sm:inline">Filters</span>
+
+            <span className="hidden sm:inline">
+              Filters
+            </span>
           </div>
 
-          {/* Status */}
-          <select
+          <FilterDropdown
             value={filters.status || ""}
-            onChange={(e) => handleChange("status", e.target.value)}
-            className="
-              h-11 rounded-xl border border-gray-200 bg-white
-              px-3 text-sm text-gray-700 outline-none transition
-              focus:border-[#0F766E]
-              focus:ring-2 focus:ring-[#0F766E]/10
-            "
-          >
-            <option value="">All Status</option>
-            <option value="OPEN">Open</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="RESOLVED">Resolved</option>
-            <option value="CLOSED">Closed</option>
-          </select>
+            options={[
+              { value: "OPEN", label: "Open" },
+              {
+                value: "IN_PROGRESS",
+                label: "In Progress",
+              },
+              {
+                value: "RESOLVED",
+                label: "Resolved",
+              },
+              {
+                value: "CLOSED",
+                label: "Closed",
+              },
+            ]}
+            onChange={(value) =>
+              handleChange("status", value)
+            }
+            placeholder="All Status"
+          />
 
-          {/* Priority */}
-          <select
+          <FilterDropdown
             value={filters.priority || ""}
-            onChange={(e) => handleChange("priority", e.target.value)}
-            className="
-              h-11 rounded-xl border border-gray-200 bg-white
-              px-3 text-sm text-gray-700 outline-none transition
-              focus:border-[#0F766E]
-              focus:ring-2 focus:ring-[#0F766E]/10
-            "
-          >
-            <option value="">All Priority</option>
-            <option value="LOW">Low</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HIGH">High</option>
-          </select>
+            options={[
+              { value: "LOW", label: "Low" },
+              { value: "MEDIUM", label: "Medium" },
+              { value: "HIGH", label: "High" },
+              {
+                value: "CRITICAL",
+                label: "Critical",
+              },
+            ]}
+            onChange={(value) =>
+              handleChange("priority", value)
+            }
+            placeholder="All Priority"
+          />
 
-          {/* Assigned */}
-          <select
-            value={filters.assignedTo || ""}
-            onChange={(e) => handleChange("assignedTo", e.target.value)}
-            className="
-              h-11 rounded-xl border border-gray-200 bg-white
-              px-3 text-sm text-gray-700 outline-none transition
-              focus:border-[#0F766E]
-              focus:ring-2 focus:ring-[#0F766E]/10
-            "
-          >
-            <option value="">All Assignees</option>
+          {showAssigneeFilter && (
+            <SearchableDropdown
+              value={filters.assignedTo || ""}
+              options={agentOptions}
+              onChange={(value) =>
+                handleChange("assignedTo", value)
+              }
+              onSearch={setAgentSearch}
+              placeholder="All Assignees"
+            />
+          )}
 
-            {filters.assignees?.map((user) => (
-              <option key={user._id} value={user._id}>
-                {user.fullName}
-              </option>
-            ))}
-          </select>
-
-          {/* Reset */}
           {hasActiveFilters && (
             <button
               type="button"
@@ -132,14 +173,13 @@ const TicketsFilters = ({
                 setSearch("");
                 onReset?.();
               }}
-              className="
-                flex h-11 items-center gap-2 rounded-xl
-                px-3 text-sm font-medium text-gray-500
-                transition hover:bg-gray-100 hover:text-gray-900
-              "
+              className="flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
             >
               <RotateCcw size={16} />
-              <span className="hidden sm:inline">Reset</span>
+
+              <span className="hidden sm:inline">
+                Reset
+              </span>
             </button>
           )}
         </div>

@@ -513,6 +513,8 @@ const limit = Math.min(
 const skip = (page - 1) * limit;
 
 const tickets = await Ticket.find(filters)
+.populate("createdBy", "fullName email role")
+    .populate("assignedTo", "fullName email role")
     .sort({ createdAt: -1, _id: -1 })
     .skip(skip)
     .limit(limit);

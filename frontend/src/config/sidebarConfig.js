@@ -17,12 +17,12 @@ export const sidebarConfig = {
     },
     {
       name: "Create Ticket",
-      path: "/dashboard/tickets/create",
+      path: "/dashboard/tickets/customer/create",
       icon: PlusCircle,
     },
     {
       name: "My Tickets",
-      path: "/dashboard/tickets",
+      path: "/dashboard/tickets/customer",
       icon: Ticket,
     },
     {
@@ -45,7 +45,7 @@ export const sidebarConfig = {
     },
     {
       name: "Assigned Tickets",
-      path: "/dashboard/tickets",
+      path: "/dashboard/tickets/agent",
       icon: Ticket,
     },
     {
@@ -66,9 +66,12 @@ export const sidebarConfig = {
       path: "/dashboard",
       icon: LayoutDashboard,
     },
+    { name: "Create Ticket",
+       path: "/dashboard/tickets/admin/create",
+        icon: PlusCircle, },
     {
       name: "All Tickets",
-      path: "/dashboard/tickets",
+      path: "/dashboard/tickets/admin",
       icon: Ticket,
     },
     {
@@ -88,3 +91,4 @@ export const sidebarConfig = {
     },
   ],
 };
+

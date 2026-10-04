@@ -1,13 +1,9 @@
-
 import { useState } from "react";
 import { Loader2, Send, Ticket } from "lucide-react";
 import toast from "react-hot-toast";
 
 import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondaryButton";
-import InputField from "../ui/InputField";
-import TextArea from "../ui/TextArea";
-import FilterDropdown from "../ui/FilterDropdown";
 import SearchableDropdown from "../ui/SearchableDropdown";
 
 import { createTicket } from "../../services/ticketService";
@@ -66,7 +62,21 @@ const CreateTicketForm = ({
         ticketData.assignedToId = formData.assignedToId;
       }
 
-      await createTicket(ticketData);
+      console.log("========== TICKET DATA SENT ==========");
+      console.log(ticketData);
+
+      const response = await createTicket(ticketData);
+
+      console.log("========== COMPLETE CREATE TICKET RESPONSE ==========");
+      console.log(response);
+
+      console.log("========== COMPLETE CREATED TICKET ==========");
+      console.log(response.data);
+
+      console.log(
+        "========== TICKET OBJECT ==========",
+        JSON.stringify(response.data?.data, null, 2)
+      );
 
       toast.success("Ticket created successfully");
 
@@ -74,6 +84,10 @@ const CreateTicketForm = ({
         onSuccess();
       }
     } catch (error) {
+      console.error("========== CREATE TICKET ERROR ==========");
+      console.error(error);
+      console.error(error.response?.data);
+
       toast.error(
         error.response?.data?.message ||
           "Failed to create ticket"
@@ -85,7 +99,6 @@ const CreateTicketForm = ({
 
   return (
     <div className="mx-auto max-w-3xl">
-      {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E5F4F1] text-[#0F766E]">
           <Ticket size={21} />
@@ -104,65 +117,101 @@ const CreateTicketForm = ({
         </div>
       </div>
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8"
       >
         <div className="space-y-6">
           {/* Ticket Title */}
-          <InputField
-            label="Ticket Title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter ticket title"
-            required
-            maxLength={200}
-          />
+          <div>
+            <label
+              htmlFor="title"
+              className="mb-2 block text-sm font-semibold text-gray-700"
+            >
+              Ticket Title
+            </label>
+
+            <input
+              id="title"
+              name="title"
+              type="text"
+              value={formData.title}
+              onChange={handleChange}
+              maxLength={200}
+              placeholder="Enter ticket title"
+              className="
+                w-full rounded-xl border border-gray-200
+                bg-white px-4 py-3
+                text-sm text-gray-800
+                outline-none transition
+                placeholder:text-gray-400
+                focus:border-[#0F766E]
+                focus:ring-2 focus:ring-[#0F766E]/10
+              "
+            />
+
+            <div className="mt-1 text-right text-xs text-gray-400">
+              {formData.title.length}/200
+            </div>
+          </div>
 
           {/* Description */}
-          <TextArea
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Describe the issue in detail..."
-            required
-            rows={7}
-          />
+          <div>
+            <label
+              htmlFor="description"
+              className="mb-2 block text-sm font-semibold text-gray-700"
+            >
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={7}
+              placeholder="Describe the issue in detail..."
+              className="
+                w-full resize-none rounded-xl
+                border border-gray-200 bg-white
+                px-4 py-3 text-sm text-gray-800
+                outline-none transition
+                placeholder:text-gray-400
+                focus:border-[#0F766E]
+                focus:ring-2 focus:ring-[#0F766E]/10
+              "
+            />
+          </div>
 
           {/* Priority */}
-          <FilterDropdown
-            label="Priority"
-            value={formData.priority}
-            onChange={(value) =>
-              setFormData((prev) => ({
-                ...prev,
-                priority: value,
-              }))
-            }
-            options={[
-              {
-                value: "low",
-                label: "Low",
-              },
-              {
-                value: "medium",
-                label: "Medium",
-              },
-              {
-                value: "high",
-                label: "High",
-              },
-              {
-                value: "critical",
-                label: "Critical",
-              },
-            ]}
-            placeholder="Select priority"
-          />
+          <div>
+            <label
+              htmlFor="priority"
+              className="mb-2 block text-sm font-semibold text-gray-700"
+            >
+              Priority
+            </label>
+
+            <select
+              id="priority"
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="
+                w-full rounded-xl border border-gray-200
+                bg-white px-4 py-3
+                text-sm text-gray-800
+                outline-none transition
+                focus:border-[#0F766E]
+                focus:ring-2 focus:ring-[#0F766E]/10
+              "
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
 
           {/* Admin-only Agent Assignment */}
           {isAdmin && (
@@ -176,13 +225,11 @@ const CreateTicketForm = ({
                   assignedToId: value,
                 }))
               }
-              onSearch={onAgentSearch}
               placeholder="Unassigned"
             />
           )}
         </div>
 
-        {/* Actions */}
         <div className="mt-8 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end">
           <SecondaryButton
             type="button"
