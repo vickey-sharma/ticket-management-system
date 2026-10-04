@@ -16,14 +16,14 @@ import AppLayout from "./layouts/AppLayout";
 
 import AdminCreateTicketPage from "./pages/ticket-management/admin/AdminCreateTicketPage";
 import AdminTicketsPage from "./pages/ticket-management/admin/AdminTicketPage";
-// import AdminTicketDetailsPage from "./pages/ticket-management/admin/AdminTicketDetailsPage";
+import AdminTicketDetailsPage from "./pages/ticket-management/admin/AdminTicketDetailsPage";
 
 import AgentTicketsPage from "./pages/ticket-management/agent/AgentTicketPage";
-// import AgentTicketDetailsPage from "./pages/ticket-management/agent/AgentTicketDetailsPage";
+import AgentTicketDetailsPage from "./pages/ticket-management/agent/AgentTicketDetailsPage";
 
 import CustomerCreateTicketPage from "./pages/ticket-management/customer/CustomerCreateTicketPage";
 import CustomerTicketsPage from "./pages/ticket-management/customer/CustomerTicketPage";
-// import CustomerTicketDetailsPage from "./pages/ticket-management/customer/CustomerTicketDetailsPage";
+import CustomerTicketDetailsPage from "./pages/ticket-management/customer/CustomerTicketDetailsPage";
 
 function App() {
   return (
@@ -65,10 +65,10 @@ function App() {
   element={<AdminCreateTicketPage />}
 />
 
-          {/* <Route
-            path="/dashboard/admin/tickets/:ticketId"
-            element={<AdminTicketDetailsPage />}
-          /> */}
+ <Route
+  path="/dashboard/tickets/admin/:ticketId"
+  element={<AdminTicketDetailsPage />}
+/>
 
           {/* Agent ticket routes */}
         <Route
@@ -76,10 +76,10 @@ function App() {
   element={<AgentTicketsPage />}
 />
 
-          {/* <Route
-            path="/dashboard/agent/tickets/:ticketId"
-            element={<AgentTicketDetailsPage />}
-          /> */}
+        <Route
+  path="/dashboard/tickets/agent/:ticketId"
+  element={<AgentTicketDetailsPage />}
+/>
 
           {/* Customer ticket routes */}
         <Route
@@ -92,11 +92,11 @@ function App() {
   element={<CustomerCreateTicketPage />}
 />
 
-{/* 
-          <Route
-            path="/dashboard/customer/tickets/:ticketId"
-            element={<CustomerTicketDetailsPage />}
-          /> */}
+
+        <Route
+  path="/dashboard/tickets/customer/:ticketId"
+  element={<CustomerTicketDetailsPage />}
+/>
 
           {/* User management */}
           <Route

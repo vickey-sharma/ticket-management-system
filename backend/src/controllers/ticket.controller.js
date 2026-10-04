@@ -541,6 +541,77 @@ const tickets = await Ticket.find(filters)
 
 });
 
+const getSingleTicketById = asyncHandler(async (req, res) => {
+    const currentUser = req.user;
+
+    if (!currentUser) {
+        throw new ApiError(401, "Unauthorized");
+    }
+
+    const currentUserRole = currentUser.role;
+
+    if (!currentUserRole) {
+        throw new ApiError(400, "Error while fetching user role");
+    }
+
+    if (!["admin", "agent", "customer"].includes(currentUserRole)) {
+        throw new ApiError(403, "Unauthorized access");
+    }
+
+    const { ticketId } = req.params;
+    const filteredTicketId = ticketId?.trim();
+
+    if (!filteredTicketId) {
+        throw new ApiError(400, "Invalid or missing ticketId");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(filteredTicketId)) {
+        throw new ApiError(400, "Invalid ticketId");
+    }
+
+    let ticket;
+
+    if (currentUserRole === "admin") {
+        ticket = await Ticket.findOne({
+            _id: filteredTicketId,
+            isDeleted: false
+        })
+            .populate("createdBy", "fullName email role")
+            .populate("assignedTo", "fullName email role");
+
+    } else if (currentUserRole === "agent") {
+        ticket = await Ticket.findOne({
+            _id: filteredTicketId,
+            assignedTo: currentUser._id,
+            isDeleted: false
+        })
+            .populate("createdBy", "fullName email role")
+            .populate("assignedTo", "fullName email role");
+
+    } else {
+        ticket = await Ticket.findOne({
+            _id: filteredTicketId,
+            createdBy: currentUser._id,
+            isDeleted: false
+        })
+            .populate("createdBy", "fullName email role")
+            .populate("assignedTo", "fullName email role");
+    }
+
+    if (!ticket) {
+        throw new ApiError(404, "Ticket not found or you do not have access to it");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                ticket,
+                "Ticket fetched successfully"
+            )
+        );
+});
 
 const assignTicketController = asyncHandler(async(req,res)=>{
       const currentUser = req.user;
@@ -753,6 +824,7 @@ createTicketController,
 getAllTicketsByAdminController,
 getAllTicketsByCustomerController,
 getAllTicketsByAgentController,
+getSingleTicketById,
 assignTicketController,
 updateTicketController,
 deleteTicketController

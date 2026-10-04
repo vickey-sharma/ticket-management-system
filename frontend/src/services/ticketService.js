@@ -35,3 +35,7 @@ export const updateTicket = (ticketId, ticketData) => {
 export const deleteTicket = (ticketId) => {
   return api.delete(`/tickets/${ticketId}`);
 };
+
+export const getTicketById = (ticketId) => {
+  return api.get(`/tickets/${ticketId}`);
+};

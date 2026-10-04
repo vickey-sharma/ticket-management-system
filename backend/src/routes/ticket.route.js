@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middleware/auth.middleware.js";
-import { createTicketController, getAllTicketsByAdminController, getAllTicketsByCustomerController,    getAllTicketsByAgentController, assignTicketController, updateTicketController, deleteTicketController } from "../controllers/ticket.controller.js";
+import { createTicketController, getAllTicketsByAdminController, getAllTicketsByCustomerController,    getAllTicketsByAgentController, getSingleTicketById, assignTicketController, updateTicketController, deleteTicketController } from "../controllers/ticket.controller.js";
 
 
 const router = Router();
@@ -37,6 +37,13 @@ router.get(
     getAllTicketsByAgentController
 );
 
+// Get single ticket by ID
+
+router.get(
+    "/:ticketId",
+    verifyJWT,
+    getSingleTicketById
+);
 
 // Assign / reassign ticket - Admin only
 router.patch(

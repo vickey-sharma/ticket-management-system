@@ -188,11 +188,19 @@ const TicketsTable = ({
                   </td>
 
                   {/* Assigned To */}
-                  {showAssignee && (
-                    <td className="px-5 py-4 text-sm text-gray-600">
-                      {getUserName(ticket.assignedTo)}
-                    </td>
-                  )}
+               {showAssignee && (
+  <td className="px-5 py-4 text-sm">
+    {isAdmin && !ticket.assignedTo ? (
+      <span className="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
+        Unassigned
+      </span>
+    ) : (
+      <span className="text-gray-600">
+        {getUserName(ticket.assignedTo)}
+      </span>
+    )}
+  </td>
+)}
 
                   {/* Created */}
                   <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-500">

@@ -215,18 +215,19 @@ const CreateTicketForm = ({
 
           {/* Admin-only Agent Assignment */}
           {isAdmin && (
-            <SearchableDropdown
-              label="Assign Agent"
-              value={formData.assignedToId}
-              options={agents}
-              onChange={(value) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  assignedToId: value,
-                }))
-              }
-              placeholder="Unassigned"
-            />
+          <SearchableDropdown
+  label="Assign Agent"
+  value={formData.assignedToId}
+  options={agents}
+  onChange={(value) =>
+    setFormData((prev) => ({
+      ...prev,
+      assignedToId: value,
+    }))
+  }
+  onSearch={onAgentSearch}
+  placeholder="Unassigned"
+/>
           )}
         </div>
 
