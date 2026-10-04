@@ -263,26 +263,27 @@ export default function Sidebar({
         </nav>
 
         {/* User / Logout */}
-        <div className="shrink-0 border-t border-gray-100 p-3">
-          <div className="mb-2 rounded-xl bg-[#F7F9F9] px-3 py-3">
-            <p className="truncate text-sm font-semibold text-[#073B3A]">
-              {user?.fullName || "User"}
-            </p>
+        {/* User / Logout */}
+<div className="shrink-0 border-t border-gray-100 p-3 max-h-[35vh] overflow-y-auto lg:max-h-none lg:overflow-visible">
+  <div className="mb-2 rounded-xl bg-[#F7F9F9] px-3 py-3">
+    <p className="truncate text-sm font-semibold text-[#073B3A]">
+      {user?.fullName || "User"}
+    </p>
 
-            <p className="mt-0.5 truncate text-xs text-gray-400">
-              {user?.email || ""}
-            </p>
-          </div>
+    <p className="mt-0.5 truncate text-xs text-gray-400">
+      {user?.email || ""}
+    </p>
+  </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
-          >
-            <LogOut size={18} strokeWidth={1.8} />
-            Logout
-          </button>
-        </div>
+  <button
+    type="button"
+    onClick={handleLogout}
+    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
+  >
+    <LogOut size={18} strokeWidth={1.8} />
+    Logout
+  </button>
+</div>
       </aside>
     </>
   );
