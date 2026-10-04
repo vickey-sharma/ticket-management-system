@@ -16,6 +16,8 @@ app.use(cors({
     credentials: true
 }))
 
+console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
+
 app.use(express.json({ limit: "16kb" }));  //GETTING JSON DATA FROM BODY USING EXPRESS 
 
 app.use(express.urlencoded({extended: true, limit: "16kb"}))     //PASSES DATA THROUGH HTML FORM  --  EXTENDED- NESTED OBJECT
