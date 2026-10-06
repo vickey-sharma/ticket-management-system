@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Loader2, Send, Ticket } from "lucide-react";
 import toast from "react-hot-toast";
@@ -5,6 +6,7 @@ import toast from "react-hot-toast";
 import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondaryButton";
 import SearchableDropdown from "../ui/SearchableDropdown";
+import FilterDropdown from "../ui/FilterDropdown";
 
 import { createTicket } from "../../services/ticketService";
 
@@ -192,42 +194,39 @@ const CreateTicketForm = ({
               Priority
             </label>
 
-            <select
-              id="priority"
-              name="priority"
+            <FilterDropdown
               value={formData.priority}
-              onChange={handleChange}
-              className="
-                w-full rounded-xl border border-gray-200
-                bg-white px-4 py-3
-                text-sm text-gray-800
-                outline-none transition
-                focus:border-[#0F766E]
-                focus:ring-2 focus:ring-[#0F766E]/10
-              "
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
+              onChange={(value) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  priority: value,
+                }))
+              }
+              placeholder="Select Priority"
+              options={[
+                { value: "low", label: "Low" },
+                { value: "medium", label: "Medium" },
+                { value: "high", label: "High" },
+                { value: "critical", label: "Critical" },
+              ]}
+            />
           </div>
 
           {/* Admin-only Agent Assignment */}
           {isAdmin && (
-          <SearchableDropdown
-  label="Assign Agent"
-  value={formData.assignedToId}
-  options={agents}
-  onChange={(value) =>
-    setFormData((prev) => ({
-      ...prev,
-      assignedToId: value,
-    }))
-  }
-  onSearch={onAgentSearch}
-  placeholder="Unassigned"
-/>
+            <SearchableDropdown
+              label="Assign Agent"
+              value={formData.assignedToId}
+              options={agents}
+              onChange={(value) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  assignedToId: value,
+                }))
+              }
+              onSearch={onAgentSearch}
+              placeholder="Unassigned"
+            />
           )}
         </div>
 

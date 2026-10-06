@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import PrimaryButton from "../../../components/ui/PrimaryButton";
+import FilterDropdown from "../../../components/ui/FilterDropdown";
 import SearchableDropdown from "../../../components/ui/SearchableDropdown";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import TicketComments from "../../../components/ticket-management/TicketComments";
@@ -316,17 +317,23 @@ const AdminTicketDetailsPage = () => {
                 Priority
               </label>
 
-              <select
-                name="priority"
-                value={formData.priority}
-                onChange={handleChange}
-                className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm outline-none focus:border-[#0F766E] focus:ring-2 focus:ring-[#0F766E]/10"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
+            <FilterDropdown
+  value={formData.priority}
+  onChange={(value) =>
+    setFormData((prev) => ({
+      ...prev,
+      priority: value,
+    }))
+  }
+  placeholder="Select Priority"
+  showPlaceholder={false}
+  options={[
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+    { value: "critical", label: "Critical" },
+  ]}
+/>
             </div>
 
             <div>
@@ -334,19 +341,23 @@ const AdminTicketDetailsPage = () => {
                 Status
               </label>
 
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm outline-none focus:border-[#0F766E] focus:ring-2 focus:ring-[#0F766E]/10"
-              >
-                <option value="open">Open</option>
-                <option value="in_progress">
-                  In Progress
-                </option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-              </select>
+              <FilterDropdown
+  value={formData.status}
+  onChange={(value) =>
+    setFormData((prev) => ({
+      ...prev,
+      status: value,
+    }))
+  }
+  placeholder="Select Status"
+  showPlaceholder={false}
+  options={[
+    { value: "open", label: "Open" },
+    { value: "in_progress", label: "In Progress" },
+    { value: "resolved", label: "Resolved" },
+    { value: "closed", label: "Closed" },
+  ]}
+/>
             </div>
           </div>
 
