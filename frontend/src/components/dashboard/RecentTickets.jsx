@@ -1,12 +1,74 @@
 import { ArrowRight, Ticket } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import StatusBadge from "../ui/StatusBadge";
 
-const RecentTickets = ({
-  tickets = [],
-  loading = false,
-}) => {
+import {
+  getAdminTickets,
+  getAgentTickets,
+  getCustomerTickets,
+} from "../../services/ticketService";
+
+const RecentTickets = ({ user }) => {
+  console.log("RECENT TICKETS USER:", user);
   const navigate = useNavigate();
+
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentTickets = async () => {
+      if (!user?.role) {
+        setTickets([]);
+        setLoading(false);
+        return;
+      }
+
+      let getTicketsService;
+
+      if (user.role === "admin") {
+        getTicketsService = getAdminTickets;
+      } else if (user.role === "agent") {
+        getTicketsService = getAgentTickets;
+      } else if (user.role === "customer") {
+        getTicketsService = getCustomerTickets;
+      } else {
+        setTickets([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+      const response = await getTicketsService({
+  page: 1,
+  limit: 5,
+});
+
+console.log("USER:", user);
+console.log("RECENT TICKETS RESPONSE:", response);
+console.log("RESPONSE DATA:", response.data?.data);
+
+
+
+        const responseData = response.data?.data;
+
+        setTickets(
+          responseData?.tickets ||
+            responseData?.data ||
+            []
+        );
+      } catch (error) {
+        setTickets([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentTickets();
+  }, [user?.role]);
 
   const formatDate = (date) => {
     if (!date) return "—";
@@ -25,22 +87,43 @@ const RecentTickets = ({
   };
 
   const handleViewAll = () => {
-    navigate("/tickets");
-  };
-
-  const handleTicketClick = (ticket) => {
-    if (ticket?.id) {
-      navigate(`/tickets/${ticket.id}`);
+    if (user?.role === "admin") {
+      navigate("/dashboard/tickets/admin");
       return;
     }
 
-    if (ticket?._id) {
-      navigate(`/tickets/${ticket._id}`);
+    if (user?.role === "agent") {
+      navigate("/dashboard/tickets/agent");
+      return;
+    }
+
+    if (user?.role === "customer") {
+      navigate("/dashboard/tickets/customer");
+    }
+  };
+
+  const handleTicketClick = (ticket) => {
+    const ticketId = ticket?._id || ticket?.id;
+
+    if (!ticketId) return;
+
+    if (user?.role === "admin") {
+      navigate(`/dashboard/tickets/admin/${ticketId}`);
+      return;
+    }
+
+    if (user?.role === "agent") {
+      navigate(`/dashboard/tickets/agent/${ticketId}`);
+      return;
+    }
+
+    if (user?.role === "customer") {
+      navigate(`/dashboard/tickets/customer/${ticketId}`);
     }
   };
 
   const getTicketId = (ticket) => {
-    return ticket?.id || ticket?._id || "—";
+    return ticket?.ticketNumber || ticket?._id || ticket?.id || "—";
   };
 
   return (
@@ -98,7 +181,7 @@ const RecentTickets = ({
 
             return (
               <button
-                key={ticketId}
+                key={ticket._id || ticket.id}
                 type="button"
                 onClick={() => handleTicketClick(ticket)}
                 className="
