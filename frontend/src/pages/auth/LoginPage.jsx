@@ -63,13 +63,6 @@ export default function LoginPage() {
       <AuthCard className="animate-authReveal">
         {/* Brand */}
         <div className="mb-8 text-center">
-          {/* <div className="mb-6 flex justify-center">
-            <img
-              src={logo}
-              alt="Company Logo"
-              className="h-14 w-auto object-contain"
-            />
-          </div> */}
 
           <h1 className="text-2xl font-bold tracking-tight text-[#073B3A] sm:text-3xl">
             Welcome back

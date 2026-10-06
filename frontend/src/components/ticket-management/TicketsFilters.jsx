@@ -48,12 +48,16 @@ const TicketsFilters = ({
         const users =
           response.data?.data?.users || [];
 
-        setAgentOptions(
-          users.map((user) => ({
-            value: user._id,
-            label: user.fullName || user.email,
-          }))
-        );
+       setAgentOptions([
+  {
+    value: "unassigned",
+    label: "Unassigned",
+  },
+  ...users.map((user) => ({
+    value: user._id,
+    label: user.fullName || user.email,
+  })),
+]);
       } catch (error) {
         setAgentOptions([]);
       }
@@ -115,6 +119,7 @@ const TicketsFilters = ({
           </div>
 
           <FilterDropdown
+          className="sm:w-32"
             value={filters.status || ""}
             options={[
               { value: "OPEN", label: "Open" },
@@ -138,6 +143,7 @@ const TicketsFilters = ({
           />
 
           <FilterDropdown
+           className="sm:w-32"
             value={filters.priority || ""}
             options={[
               { value: "LOW", label: "Low" },
@@ -156,6 +162,7 @@ const TicketsFilters = ({
 
           {showAssigneeFilter && (
             <SearchableDropdown
+             className="sm:w-42"
               value={filters.assignedTo || ""}
               options={agentOptions}
               onChange={(value) =>

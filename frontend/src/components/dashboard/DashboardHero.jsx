@@ -16,6 +16,15 @@ const DashboardHero = ({
 
   const firstName = user?.fullName?.split(" ")[0] || "there";
 
+  const hour = new Date().getHours();
+
+const greeting =
+  hour < 12
+    ? "Good morning"
+    : hour < 17
+    ? "Good afternoon"
+    : "Good evening";
+
   const handleCreateTicket = () => {
     if (user?.role === "admin") {
       navigate("/dashboard/tickets/admin/create");
@@ -64,7 +73,7 @@ const DashboardHero = ({
           </p>
 
           <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Good morning, {firstName}
+            {greeting}, {firstName}
           </h1>
 
           <p className="mt-3 max-w-xl text-sm leading-6 text-white/60 sm:text-base">

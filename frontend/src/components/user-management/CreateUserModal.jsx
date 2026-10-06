@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import toast from "react-hot-toast";
+import FilterDropdown from "../ui/FilterDropdown";
 
 import { registerUserByAdmin } from "../../services/authService";
 
@@ -198,30 +200,20 @@ export default function CreateUserModal({
                 Role
               </label>
 
-              <select
-                name="role"
+              <FilterDropdown
                 value={formData.role}
-                onChange={handleChange}
-                className="
-                  h-11
-                  w-full
-                  rounded-xl
-                  border
-                  border-gray-200
-                  bg-white
-                  px-3.5
-                  text-sm
-                  text-gray-700
-                  outline-none
-                  transition
-                  focus:border-[#0F766E]/40
-                  focus:ring-2
-                  focus:ring-[#0F766E]/10
-                "
-              >
-                <option value="agent">Agent</option>
-                <option value="admin">Admin</option>
-              </select>
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    role: value,
+                  }))
+                }
+                placeholder="Select Role"
+                options={[
+                  { value: "agent", label: "Agent" },
+                  { value: "admin", label: "Admin" },
+                ]}
+              />
 
               <p className="mt-1.5 text-xs text-gray-400">
                 Customers are created through public registration.

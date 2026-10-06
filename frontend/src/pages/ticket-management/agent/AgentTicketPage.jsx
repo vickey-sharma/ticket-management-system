@@ -166,6 +166,7 @@ const AgentTicketsPage = () => {
         tickets={tickets}
         loading={loading}
         onTicketClick={handleTicketClick}
+         showAssignee={true}
       />
 
       {/* Pagination */}

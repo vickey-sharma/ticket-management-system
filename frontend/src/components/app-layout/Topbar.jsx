@@ -1,13 +1,18 @@
 import { Bell, Menu, Search } from "lucide-react";
 
-const Topbar = ({ user, onMenuClick }) => {
-  const firstName = user?.fullName?.split(" ")[0] || "User";
+const Topbar = ({
+  user,
+  onMenuClick,
+}) => {
+  const displayName =
+    user?.name || user?.fullName || "User";
+
+  const firstName =
+    displayName.split(" ")[0] || "User";
 
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
-      {/* Left */}
       <div className="flex items-center gap-3">
-        {/* Mobile menu */}
         <button
           type="button"
           onClick={onMenuClick}
@@ -28,9 +33,7 @@ const Topbar = ({ user, onMenuClick }) => {
         </div>
       </div>
 
-      {/* Right */}
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Search */}
         <div className="relative hidden md:block">
           <Search
             size={18}
@@ -41,8 +44,11 @@ const Topbar = ({ user, onMenuClick }) => {
             type="text"
             placeholder="Search tickets..."
             className="
-              h-10 w-56 rounded-xl border border-gray-200
-              bg-gray-50 pl-10 pr-4 text-sm text-gray-900
+              h-10 w-56 rounded-xl
+              border border-gray-200
+              bg-gray-50
+              pl-10 pr-4
+              text-sm text-gray-900
               outline-none transition
               placeholder:text-gray-400
               focus:border-[#0F766E]
@@ -54,7 +60,6 @@ const Topbar = ({ user, onMenuClick }) => {
           />
         </div>
 
-        {/* Notification */}
         <button
           type="button"
           className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
@@ -62,25 +67,22 @@ const Topbar = ({ user, onMenuClick }) => {
         >
           <Bell size={20} />
 
-          {/* Notification indicator */}
           <span className="absolute right-2.5 top-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
         </button>
 
-        {/* Divider */}
         <div className="hidden h-8 w-px bg-gray-200 sm:block" />
 
-        {/* Profile */}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#DFF5F1] text-sm font-bold text-[#0F766E]">
-            {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
+            {displayName.charAt(0).toUpperCase()}
           </div>
 
           <div className="hidden min-w-0 sm:block">
             <p className="max-w-32 truncate text-sm font-semibold text-gray-900">
-              {user?.fullName || "User"}
+              {displayName}
             </p>
 
-            <p className="text-xs capitalize text-gray-500">
+            <p className="text-xs uppercase text-gray-500">
               {user?.role || "User"}
             </p>
           </div>
